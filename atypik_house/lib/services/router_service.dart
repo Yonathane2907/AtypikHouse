@@ -1,4 +1,5 @@
 import 'package:atypik_house/screens/HomeScreen.dart';
+import 'package:atypik_house/screens/InscriptionScreen.dart';
 import 'package:go_router/go_router.dart';
 import '../screens/LoginScreen.dart';
 import '../main.dart';
@@ -23,6 +24,11 @@ class RouterService {
           path: '/login',
           name: 'login',
           builder: (context, state) => const LoginScreen(),
+        ),
+        GoRoute(
+          path: '/inscription',
+          name: 'inscription',
+          builder: (context, state) => const InscriptionScreen(),
         ),
       ],
     );

@@ -19,6 +19,7 @@ class AtypikHouse extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final router = RouterService.getRouter();
     return MaterialApp.router(
       title: "AtypikHouse",
       routerConfig: RouterService.getRouter(),
