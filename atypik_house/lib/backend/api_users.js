@@ -60,6 +60,7 @@ router.post('/login', async (req, res) => {
             user: {
                 id: user.id,
                 email: user.email,
+                role:user.role,
                 // Autres informations utilisateur que vous souhaitez inclure
             }
         };
@@ -74,5 +75,34 @@ router.post('/login', async (req, res) => {
         res.status(500).json({ error: 'Erreur lors de la connexion' });
     }
 });
+
+const verifyToken = (req, res, next) => {
+    const token = req.header('x-auth-token');
+    if (!token) return res.status(401).json({ msg: 'Pas de token, autorisation refusée' });
+
+    try {
+        const decoded = jwt.verify(token, 'votre_secret_jwt');
+        req.user = decoded.user;
+        next();
+    } catch (err) {
+        res.status(401).json({ msg: 'Token non valide' });
+    }
+};
+
+const checkRole = (role) => (req, res, next) => {
+    if (req.user.role !== role) {
+        return res.status(403).json({ msg: 'Accès refusé' });
+    }
+    next();
+};
+
+router.get('/admin', verifyToken, checkRole('admin'), (req, res) => {
+    res.send('Contenu réservé aux administrateurs');
+});
+
+router.get('/user', verifyToken, checkRole('user'), (req, res) => {
+    res.send('Contenu réservé aux utilisateurs');
+});
+
 
 module.exports = router;

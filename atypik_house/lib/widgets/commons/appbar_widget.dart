@@ -10,52 +10,21 @@ class AppbarWidget extends StatelessWidget implements PreferredSizeWidget {
     final isHome = currentPath == '/';
 
     return AppBar(
-      title: const Text(
-        'AtypikHouse',
-        style: TextStyle(
-          color: Color.fromRGBO(255, 0, 255, 1),
-          fontSize: 20,
-          fontFamily: 'RedditMono',
-        ),
+      backgroundColor: Colors.white,
+      title: Row(
+        children: [
+          Image.asset(
+            'assets/logo.png',
+            height: 40,
+          ),
+          const SizedBox(width: 10),
+          const Text(
+            'Atypik House',
+            style: TextStyle(color: Colors.black),
+          ),
+        ],
       ),
-      leading: isHome
-          ? null
-          : IconButton(
-        icon: const Icon(Icons.arrow_back),
-        onPressed: () {
-         context.pop();
-        },
-      ),
-      actions: [
-        TextButton(
-          style: ButtonStyle(
-            foregroundColor: WidgetStateProperty.all<Color>(Colors.blue),
-          ),
-          onPressed: () {
-            context.push('/');
-          },
-          child: const Text('Accueil'),
-        ),
-        TextButton(
-          style: ButtonStyle(
-            foregroundColor: WidgetStateProperty.all<Color>(Colors.blue),
-          ),
-          onPressed: () {
-            context.push('/login');
-          },
-          child: const Text('Connexion'),
-        ),
-        TextButton(
-          style: ButtonStyle(
-            foregroundColor: WidgetStateProperty.all<Color>(Colors.blue),
-          ),
-          onPressed: () {
-            context.push('/inscription');
-          },
-          child: const Text('Inscription'),
-        )
-      ],
-      centerTitle: true,
+      iconTheme: const IconThemeData(color: Colors.black),
     );
   }
 

@@ -1,3 +1,4 @@
+import 'package:atypik_house/screens/ContactScreen.dart';
 import 'package:atypik_house/screens/HomeScreen.dart';
 import 'package:atypik_house/screens/InscriptionScreen.dart';
 import 'package:go_router/go_router.dart';
@@ -29,6 +30,11 @@ class RouterService {
           path: '/inscription',
           name: 'inscription',
           builder: (context, state) => const InscriptionScreen(),
+        ),
+        GoRoute(
+          path: '/contact',
+          name: 'contact',
+          builder: (context, state) => const ContactScreen(),
         ),
       ],
     );

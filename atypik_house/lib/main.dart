@@ -1,4 +1,5 @@
 import 'package:atypik_house/providers/category_name_provider.dart';
+import 'package:atypik_house/services/api/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'services/router_service.dart';
@@ -7,7 +8,7 @@ void main() => runApp(
   MultiProvider(
     providers: [
       ChangeNotifierProvider(
-        create: (context) => CategoryProvider(),
+        create: (context) => UserService(),
       ),
     ],
     child: const AtypikHouse(),

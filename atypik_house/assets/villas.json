@@ -1,0 +1,44 @@
+[
+    {
+      "id": 1,
+      "name": "Cabane dans les arbres",
+      "description": "Bienvenue à la Maison d’Hôte “Le Repos Enchanté”, un havre de paix niché au cœur de la campagne française. Cette charmante maison d’hôte offre une expérience unique et authentique, idéale pour les voyageurs en quête de tranquillité et de confort.",
+      "price": 100,
+      "image": "assets/img.jpeg"
+    },
+    {
+      "id": 2,
+      "name": "Yourtes",
+      "description": "Bienvenue à la Maison d’Hôte “Le Repos Enchanté”, un havre de paix niché au cœur de la campagne française. Cette charmante maison d’hôte offre une expérience unique et authentique, idéale pour les voyageurs en quête de tranquillité et de confort.",
+      "price": 150,
+      "image": "assets/img1.jpeg"
+    },
+    {
+      "id": 3,
+      "name": "Tiny houses",
+      "description": "Bienvenue à la Maison d’Hôte “Le Repos Enchanté”, un havre de paix niché au cœur de la campagne française. Cette charmante maison d’hôte offre une expérience unique et authentique, idéale pour les voyageurs en quête de tranquillité et de confort.",
+      "price": 200,
+      "image": "assets/img2.jpeg"
+    },
+    {
+      "id": 4,
+      "name": "Chalets",
+      "description": "Bienvenue à la Maison d’Hôte “Le Repos Enchanté”, un havre de paix niché au cœur de la campagne française. Cette charmante maison d’hôte offre une expérience unique et authentique, idéale pour les voyageurs en quête de tranquillité et de confort.",
+      "price": 250,
+      "image": "assets/img3.jpeg"
+    },
+    {
+      "id": 5,
+      "name": "Maisons troglodytes",
+      "description": "Description de la villa 5",
+      "price": 300,
+      "image": "assets/img4.jpeg"
+    },
+    {
+      "id": 6,
+      "name": "Lighthouses",
+      "description": "Description de la villa 6",
+      "price": 350,
+      "image": "assets/img5.jpeg"
+    }
+  ]

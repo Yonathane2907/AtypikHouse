@@ -1,22 +1,10 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
-import '../../models/user.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class UserService {
+class UserService extends ChangeNotifier {
   static const String baseUrl = 'http://localhost:3000';
-
-  Future<List<User>> fetchUsers() async {
-    final response = await http.get(Uri.parse('$baseUrl/api/getUsers'));
-
-    if (response.statusCode == 200) {
-      List<dynamic> jsonResponse = json.decode(response.body);
-      print(jsonResponse);
-      return jsonResponse.map((user) => User.fromJson(user)).toList();
-
-    } else {
-      throw Exception('Failed to load users');
-    }
-  }
 
   Future<void> inscription(String nom, String prenom, String adresse, String email, String password) async {
     final url = Uri.parse('$baseUrl/api/signUp');
@@ -43,25 +31,36 @@ class UserService {
     }
   }
 
-  Future<void> login(String email, String password) async {
-    final url = Uri.parse('$baseUrl/api/login');
+  Future<bool> login(String email, String password) async {
     final response = await http.post(
-      url,
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode({
-        'email': email,
-        'password': password,
-      }),
+      Uri.parse('$baseUrl/api/login'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': email, 'password': password}),
     );
 
     if (response.statusCode == 200) {
-      // Succès
-      print('Inscription réussie');
+      final Map<String, dynamic> data = jsonDecode(response.body);
+      final String token = data['token'];
+
+      // Stocker le token dans SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('jwt_token', token);
+
+      return true;
     } else {
-      // Gestion des erreurs
-      print('Erreur lors de l\'inscription : ${response.statusCode}');
+      return false;
     }
   }
+
+  Future<void> logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('jwt_token');
+  }
+
+  Future<bool> isAuthenticated() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('jwt_token');
+    return token != null;
+  }
+
 }

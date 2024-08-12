@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../models/user.dart';
 import '../widgets/commons/appbar_widget.dart';
 import '../services/api/user_service.dart';
+import '../widgets/commons/drawer_widget.dart';
 import '../widgets/login/inscription_widget.dart';
 
 void main() {
@@ -37,13 +38,13 @@ class _LoginScreenState extends State<InscriptionScreen> {
   @override
   void initState() {
     super.initState();
-    futureUsers = UserService().fetchUsers();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const AppbarWidget(),
+      drawer: DrawerWidget(),
       body: SingleChildScrollView(
         child: Column(
           children: [

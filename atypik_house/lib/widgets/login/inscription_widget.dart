@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 
 import '../../services/api/user_service.dart';
+
 class InscriptionWidget extends StatefulWidget {
   const InscriptionWidget({super.key});
 
@@ -18,6 +19,22 @@ class _InscriptionWidgetState extends State<InscriptionWidget> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _adresseController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
+
+  // Regex pour validation de l'email
+  final RegExp _emailRegExp = RegExp(
+    r'^[^@]+@[^@]+\.[^@]+$',
+    caseSensitive: false,
+  );
+
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -69,6 +86,8 @@ class _InscriptionWidgetState extends State<InscriptionWidget> {
             validator: (String? value) {
               if (value == null || value.isEmpty) {
                 return 'Veuillez saisir votre email';
+              } else if (!_emailRegExp.hasMatch(value)) {
+                return 'Veuillez saisir un email valide';
               }
               return null;
             },
@@ -89,7 +108,7 @@ class _InscriptionWidgetState extends State<InscriptionWidget> {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: ElevatedButton(
-              onPressed: () async{
+              onPressed: () async {
                 // Validate will return true if the form is valid, or false if
                 // the form is invalid.
                 if (_formKey.currentState!.validate()) {
@@ -98,11 +117,20 @@ class _InscriptionWidgetState extends State<InscriptionWidget> {
                   final adresse = _adresseController.text;
                   final email = _emailController.text;
                   final password = _passwordController.text;
-                  // Process data.
-                  await UserService().inscription(nom, prenom, adresse, email, password);
+
+                  try {
+                    // Process data.
+                    await UserService().inscription(nom, prenom, adresse, email, password);
+                    // Afficher un SnackBar pour indiquer que l'inscription a réussi
+                    _showSnackBar('Inscription réussie.');
+                    // Redirection vers la page de connexion ou d'accueil
+                    GoRouter.of(context).go('/login');
+                  } catch (e) {
+                    _showSnackBar('Une erreur s\'est produite. Veuillez réessayer plus tard.');
+                  }
                 }
               },
-              child: const Text('Submit'),
+              child: const Text('S\'inscrire'),
             ),
           ),
         ],

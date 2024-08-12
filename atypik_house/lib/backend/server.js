@@ -37,9 +37,6 @@ const userRoutes = require('./api_users');
 // Utiliser les routes
 app.use('/api', userRoutes);
 
-
-// Endpoint pour récupérer tous les utilisateurs
-
 // Écoute du serveur Express sur le port spécifié
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);

@@ -4,23 +4,10 @@ import 'package:flutter/material.dart';
 import '../models/user.dart';
 import '../widgets/commons/appbar_widget.dart';
 import '../services/api/user_service.dart';
+import '../widgets/commons/drawer_widget.dart';
 
 void main() {
-  runApp(const LoginApp());
-}
-
-class LoginApp extends StatelessWidget {
-  const LoginApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(title: const Text('Login')),
-        body: const LoginScreen(),
-      ),
-    );
-  }
+  runApp(const LoginScreen());
 }
 
 class LoginScreen extends StatefulWidget {
@@ -36,13 +23,13 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    futureUsers = UserService().fetchUsers();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const AppbarWidget(),
+      drawer: DrawerWidget(),
       body: SingleChildScrollView(
         child: Column(
           children: [
