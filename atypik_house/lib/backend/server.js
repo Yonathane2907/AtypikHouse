@@ -2,6 +2,9 @@
 const express = require('express');
 const mysql = require('mysql');
 const cors = require('cors'); // Importe le middleware CORS
+const {diskStorage} = require("multer");
+const {extname} = require("path");
+
 
 const app = express();
 const bodyParser = require('body-parser');
@@ -33,9 +36,15 @@ const PORT = process.env.PORT || 3000;
 
 // Importer les routes
 const userRoutes = require('./api_users');
+const logementsRoutes = require('./api_logements');
+const imageRoutes = require('./api_image');
+
 
 // Utiliser les routes
 app.use('/api', userRoutes);
+app.use('/api', logementsRoutes);
+app.use('/uploads', express.static('uploads'));
+app.use('/api', imageRoutes);
 
 // Écoute du serveur Express sur le port spécifié
 app.listen(port, () => {

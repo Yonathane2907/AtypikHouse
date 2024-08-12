@@ -1,6 +1,7 @@
 class Logement {
   final int id_logement;
   final int proprietaire_id;
+  final String image_path;
   final String titre;
   final String description;
   final String adresse;
@@ -12,6 +13,7 @@ class Logement {
   Logement({
     required this.id_logement,
     required this.proprietaire_id,
+    required this.image_path,
     required this.titre,
     required this.description,
     required this.adresse,
@@ -25,6 +27,7 @@ class Logement {
     return Logement(
       id_logement: json['id_logement'],
       proprietaire_id: json['proprietaire_id'],
+      image_path: json['image_path'],
       titre: json['titre'],
       description: json['description'],
       adresse: json['adresse'],
@@ -39,6 +42,7 @@ class Logement {
     return {
       'id_logement': id_logement,
       'proprietaire_id': proprietaire_id,
+      'image_path': image_path,
       'titre': titre,
       'description': description,
       'adresse': adresse,

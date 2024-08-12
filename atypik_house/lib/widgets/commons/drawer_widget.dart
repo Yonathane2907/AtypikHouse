@@ -66,7 +66,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
             leading: const Icon(Icons.house),
             title: const Text('Nos habitats'),
             onTap: () {
-              Navigator.pop(context);
+              GoRouter.of(context).go('/logements');
               // Ajoutez ici la navigation vers la page "Nos habitats"
             },
           ),
