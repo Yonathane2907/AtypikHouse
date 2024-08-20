@@ -1,12 +1,17 @@
 // server.js
-
 const express = require('express');
 const mysql = require('mysql');
 const cors = require('cors'); // Importe le middleware CORS
+const {diskStorage} = require("multer");
+const {extname} = require("path");
+
 
 const app = express();
+const bodyParser = require('body-parser');
 const port = 3000;
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 // Configuration de la connexion à la base de données MySQL
 const connection = mysql.createConnection({
     host: 'localhost',
@@ -27,18 +32,19 @@ connection.connect(err => {
 // Utilisation du middleware CORS
 app.use(cors());
 
-// Endpoint pour récupérer tous les utilisateurs
-app.get('/api/users', (req, res) => {
-    const sql = 'SELECT * FROM test';
-    connection.query(sql, (err, results) => {
-        if (err) {
-            console.error('Error executing query:', err.stack);
-            res.status(500).json({ error: 'Internal Server Error' });
-            return;
-        }
-        res.json(results);
-    });
-});
+const PORT = process.env.PORT || 3000;
+
+// Importer les routes
+const userRoutes = require('./api_users');
+const logementsRoutes = require('./api_logements');
+const imageRoutes = require('./api_image');
+
+
+// Utiliser les routes
+app.use('/api', userRoutes);
+app.use('/api', logementsRoutes);
+app.use('/uploads', express.static('uploads'));
+app.use('/api', imageRoutes);
 
 // Écoute du serveur Express sur le port spécifié
 app.listen(port, () => {
