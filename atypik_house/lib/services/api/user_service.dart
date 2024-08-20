@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserService extends ChangeNotifier {
-  static const String baseUrl = 'http://localhost:3000';
+  final String baseUrl = dotenv.env['API_BASE_URL'] ?? 'http://92.113.27.31:3000';
 
   Future<void> inscription(String nom, String prenom, String adresse, String email, String password) async {
     final url = Uri.parse('$baseUrl/api/signUp');
