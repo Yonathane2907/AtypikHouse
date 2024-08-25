@@ -16,22 +16,60 @@ router.get('/getUsers', async (req, res) => {
 });
 
 //Endpoint d'inscription
+//Endpoint d'inscription
+// Endpoint d'inscription
 router.post('/signUp', async (req, res) => {
     console.log(req.body);
-    const { nom, prenom, adresse, email, password } = req.body; // Récupérer les données du corps de la requête
+    const { nom, prenom, adresse, email, password, role } = req.body; // Récupérer les données du corps de la requête
     const hashedPassword = await bcrypt.hash(password, 10);
+
     try {
-        const [rows] = await db.query(
-            'INSERT INTO `user` (`nom`, `prenom`, `adresse`, `email`, `password`)' +
-            ' VALUES (?, ?, ?, ?, ?)', // Utilisation de placeholders pour éviter les injections SQL
-            [nom, prenom, adresse, email, hashedPassword]
+        // Vérifier si l'email est déjà utilisé
+        const [existingUser] = await db.query('SELECT * FROM `user` WHERE `email` = ?', [email]);
+        if (existingUser.length > 0) {
+            return res.status(400).json({ error: 'L\'email est déjà utilisé' });
+        }
+
+        // Insérer l'utilisateur dans la table 'user'
+        const [userResult] = await db.query(
+            'INSERT INTO `user` (`nom`, `prenom`, `adresse`, `email`, `password`, `role`) VALUES (?, ?, ?, ?, ?, ?)',
+            [nom, prenom, adresse, email, hashedPassword, role]
         );
-        res.json(rows); // Renvoyer les données insérées si nécessaire
+
+        // Récupérer l'id de l'utilisateur inséré
+        const userId = userResult.insertId;
+
+        // Si le rôle est 'propriétaire', insérer dans la table 'propriétaire'
+        if (role === 'Propriétaire') {
+            await db.query(
+                'INSERT INTO `proprietaire` (`user_id`) VALUES (?)',
+                [userId]
+            );
+        }
+
+        // Générer un token JWT pour l'utilisateur nouvellement inscrit
+        const payload = {
+            user: {
+                id: userId,
+                email: email,
+                role: role
+            }
+        };
+
+        jwt.sign(payload, 'secret_jwt', { expiresIn: '1h' }, (err, token) => {
+            if (err) throw err;
+            res.json({ token, role });
+        });
+
     } catch (err) {
         console.error('Erreur lors de l\'inscription', err);
         res.status(500).json({ error: 'Erreur lors de l\'inscription' });
     }
 });
+
+
+
+
 
 //Endpoint Connexion
 router.post('/login', async (req, res) => {
@@ -67,7 +105,7 @@ router.post('/login', async (req, res) => {
 
         jwt.sign(payload, 'secret_jwt', { expiresIn: '1h' }, (err, token) => {
             if (err) throw err;
-            res.json({ token });
+            res.json({ token, role: user.role });
         });
 
     } catch (err) {
@@ -76,29 +114,41 @@ router.post('/login', async (req, res) => {
     }
 });
 
+// Middleware pour vérifier le token
 const verifyToken = (req, res, next) => {
-    const token = req.header('x-auth-token');
-    if (!token) return res.status(401).json({ msg: 'Pas de token, autorisation refusée' });
+    const authHeader = req.header('Authorization');
+    const token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.substring(7) : null;
+
+    if (!token) {
+        return res.status(401).json({ msg: 'Pas de token, autorisation refusée' });
+    }
 
     try {
-        const decoded = jwt.verify(token, 'votre_secret_jwt');
-        req.user = decoded.user;
+        const decoded = jwt.verify(token, 'secret_jwt');
+        req.user_role = decoded.user.role; // Extraction du rôle depuis la clé user.role
         next();
     } catch (err) {
         res.status(401).json({ msg: 'Token non valide' });
     }
 };
 
+// Middleware pour vérifier le rôle
 const checkRole = (role) => (req, res, next) => {
-    if (req.user.role !== role) {
-        return res.status(403).json({ msg: 'Accès refusé' });
+    const userRole = req.user_role;
+
+    if (userRole && userRole === role) {
+        return next();
     }
-    next();
+
+    return res.status(403).json({ msg: 'Accès refusé' });
 };
 
+// Route protégée par le rôle
 router.get('/admin', verifyToken, checkRole('admin'), (req, res) => {
-    res.send('Contenu réservé aux administrateurs');
+    res.send("admin");
 });
+
+module.exports = router;
 
 router.get('/user', verifyToken, checkRole('user'), (req, res) => {
     res.send('Contenu réservé aux utilisateurs');

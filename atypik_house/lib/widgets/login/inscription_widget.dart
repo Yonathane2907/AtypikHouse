@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:http/http.dart' as http;
-
 import '../../services/api/user_service.dart';
 
 class InscriptionWidget extends StatefulWidget {
@@ -20,7 +18,8 @@ class _InscriptionWidgetState extends State<InscriptionWidget> {
   TextEditingController _adresseController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
 
-  // Regex pour validation de l'email
+  String? _selectedRole;
+
   final RegExp _emailRegExp = RegExp(
     r'^[^@]+@[^@]+\.[^@]+$',
     caseSensitive: false,
@@ -105,26 +104,45 @@ class _InscriptionWidgetState extends State<InscriptionWidget> {
               return null;
             },
           ),
+          DropdownButtonFormField<String>(
+            value: _selectedRole,
+            hint: const Text('Sélectionnez un rôle'),
+            onChanged: (String? newValue) {
+              setState(() {
+                _selectedRole = newValue;
+              });
+            },
+            validator: (String? value) {
+              if (value == null || value.isEmpty) {
+                return 'Veuillez sélectionner un rôle';
+              }
+              return null;
+            },
+            items: <String>['Locataire', 'Propriétaire'].map((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: ElevatedButton(
               onPressed: () async {
-                // Validate will return true if the form is valid, or false if
-                // the form is invalid.
                 if (_formKey.currentState!.validate()) {
                   final nom = _nomController.text;
                   final prenom = _prenomController.text;
                   final adresse = _adresseController.text;
                   final email = _emailController.text;
                   final password = _passwordController.text;
+                  final role = _selectedRole;
 
                   try {
-                    // Process data.
-                    await UserService().inscription(nom, prenom, adresse, email, password);
-                    // Afficher un SnackBar pour indiquer que l'inscription a réussi
-                    _showSnackBar('Inscription réussie.');
-                    // Redirection vers la page de connexion ou d'accueil
-                    GoRouter.of(context).go('/login');
+                    final resultMessage = await UserService().inscription(nom, prenom, adresse, email, password, role!);
+                    _showSnackBar(resultMessage);
+                    if (resultMessage == 'Inscription réussie.') {
+                      GoRouter.of(context).go('/');
+                    }
                   } catch (e) {
                     _showSnackBar('Une erreur s\'est produite. Veuillez réessayer plus tard.');
                   }

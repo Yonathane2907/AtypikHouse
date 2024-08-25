@@ -38,6 +38,7 @@ const PORT = process.env.PORT || 3000;
 const userRoutes = require('./api_users');
 const logementsRoutes = require('./api_logements');
 const imageRoutes = require('./api_image');
+const adminRoutes = require('./api_admin');
 
 
 // Utiliser les routes
@@ -45,6 +46,7 @@ app.use('/api', userRoutes);
 app.use('/api', logementsRoutes);
 app.use('/uploads', express.static('uploads'));
 app.use('/api', imageRoutes);
+app.use('/api', adminRoutes);
 
 // Écoute du serveur Express sur le port spécifié
 app.listen(port, () => {

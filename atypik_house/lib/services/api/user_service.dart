@@ -5,9 +5,9 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserService extends ChangeNotifier {
-  final String baseUrl = dotenv.env['API_BASE_URL'] ?? 'http://92.113.27.31:3000';
+  final String baseUrl = dotenv.env['API_BASE_URL'] ?? 'https://92.113.27.31:3000';
 
-  Future<void> inscription(String nom, String prenom, String adresse, String email, String password) async {
+  Future<String> inscription(String nom, String prenom, String adresse, String email, String password, String role) async {
     final url = Uri.parse('$baseUrl/api/signUp');
     final response = await http.post(
       url,
@@ -20,17 +20,28 @@ class UserService extends ChangeNotifier {
         'adresse': adresse,
         'email': email,
         'password': password,
+        'role': role
       }),
     );
 
     if (response.statusCode == 200) {
-      // Succès
-      print('Inscription réussie');
+      final Map<String, dynamic> data = jsonDecode(response.body);
+      final String token = data['token'];
+      final String role = data['role'];
+
+      // Stocker le token et le rôle dans SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('jwt_token', token);
+      await prefs.setString('user_role', role);
+
+      return 'Inscription réussie.';
     } else {
-      // Gestion des erreurs
-      print('Erreur lors de l\'inscription : ${response.statusCode}');
+      final errorResponse = jsonDecode(response.body);
+      return errorResponse['error'] ?? 'Erreur inconnue';
     }
   }
+
+
 
   Future<bool> login(String email, String password) async {
     final response = await http.post(
@@ -42,10 +53,12 @@ class UserService extends ChangeNotifier {
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = jsonDecode(response.body);
       final String token = data['token'];
+      final String role = data['role'];
 
-      // Stocker le token dans SharedPreferences
+      // Stocker le token et le rôle dans SharedPreferences
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('jwt_token', token);
+      await prefs.setString('user_role', role);
 
       return true;
     } else {
@@ -56,6 +69,7 @@ class UserService extends ChangeNotifier {
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('jwt_token');
+    await prefs.remove('user_role'); // Supprimer également le rôle de l'utilisateur lors de la déconnexion
   }
 
   Future<bool> isAuthenticated() async {
@@ -64,4 +78,8 @@ class UserService extends ChangeNotifier {
     return token != null;
   }
 
+  Future<String?> getUserRole() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('user_role');
+  }
 }
