@@ -1,7 +1,7 @@
-import 'package:atypik_house/widgets/commons/drawer_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../widgets/commons/cookie_widget.dart';
+import '../widgets/commons/drawer_widget.dart';
 import '../widgets/commons/footer.dart';
 import '../widgets/commons/carousel_section.dart';
 import '../widgets/commons/villa_section.dart';
@@ -20,6 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     checkAuthentication();
+    checkCookieConsent();  // Ajouter cette ligne
   }
 
   Future<void> checkAuthentication() async {
@@ -28,6 +29,30 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       isLoggedIn = token != null;
     });
+  }
+
+  Future<void> saveCookieConsent(bool accepted) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('cookie_consent', accepted);
+  }
+
+  Future<bool> getCookieConsent() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('cookie_consent') ?? false;
+  }
+
+  void checkCookieConsent() async {
+    bool accepted = await getCookieConsent();
+    if (!accepted) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showDialog(
+          context: context,
+          builder: (context) => CookieConsentDialog(onAccept: () async {
+            await saveCookieConsent(true);
+          }),
+        );
+      });
+    }
   }
 
   void _showSnackBar(String message) {

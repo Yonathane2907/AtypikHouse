@@ -30,7 +30,13 @@ connection.connect(err => {
 });
 
 // Utilisation du middleware CORS
-app.use(cors());
+app.use(cors({
+    origin: '*', // Vous pouvez remplacer '*' par votre domaine spécifique
+    methods: 'GET,POST,PUT,DELETE,OPTIONS',
+    allowedHeaders: 'Content-Type,Authorization'
+}));
+
+app.use('/uploads', cors(), express.static('uploads'));
 
 const PORT = process.env.PORT || 3000;
 

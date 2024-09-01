@@ -101,10 +101,12 @@ router.post('/login', async (req, res) => {
                 role:user.role,
                 // Autres informations utilisateur que vous souhaitez inclure
             }
+
         };
 
         jwt.sign(payload, 'secret_jwt', { expiresIn: '1h' }, (err, token) => {
             if (err) throw err;
+            console.log(payload.user.role);
             res.json({ token, role: user.role });
         });
 

@@ -19,11 +19,10 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     _checkAuthentication();
   }
 
-
   Future<void> _checkAuthentication() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('jwt_token');
-    final role = prefs.getString('user_role'); // Supposons que le rôle soit stocké dans les SharedPreferences
+    final role = prefs.getString('user_role'); // Supposons que le rôle soit stocké dans SharedPreferences
     setState(() {
       isLoggedIn = token != null;
       userRole = role;
@@ -99,9 +98,10 @@ class _DrawerWidgetState extends State<DrawerWidget> {
               leading: const Icon(Icons.logout),
               title: const Text('Déconnexion'),
               onTap: () async {
+                // Supprimer les informations de stockage
                 final prefs = await SharedPreferences.getInstance();
                 await prefs.remove('jwt_token');
-                await prefs.remove('user_role'); // Supprimer le rôle également
+                await prefs.remove('user_role');
                 setState(() {
                   isLoggedIn = false;
                   userRole = null;

@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserService extends ChangeNotifier {
-  final String baseUrl = dotenv.env['API_BASE_URL'] ?? 'https://92.113.27.31:3000';
+  final String baseUrl = dotenv.env['API_BASE_URL'] ?? 'https://localhost:3000';
 
   Future<String> inscription(String nom, String prenom, String adresse, String email, String password, String role) async {
     final url = Uri.parse('$baseUrl/api/signUp');
@@ -41,8 +41,6 @@ class UserService extends ChangeNotifier {
     }
   }
 
-
-
   Future<bool> login(String email, String password) async {
     final response = await http.post(
       Uri.parse('$baseUrl/api/login'),
@@ -67,9 +65,10 @@ class UserService extends ChangeNotifier {
   }
 
   Future<void> logout() async {
+    // Supprimer les informations de stockage
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('jwt_token');
-    await prefs.remove('user_role'); // Supprimer également le rôle de l'utilisateur lors de la déconnexion
+    await prefs.remove('user_role');
   }
 
   Future<bool> isAuthenticated() async {
