@@ -31,7 +31,7 @@ class LogementsScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Image.network(
-                        'http://localhost:3000/${logement.image_path}',  // Utilisez Image.network pour charger les images à partir d'une URL
+                        'https://92.113.27.31/${logement.image_path}',  // Utilisez Image.network pour charger les images à partir d'une URL
                         fit: BoxFit.cover,
                         width: double.infinity,
                         height: 200,  // Vous pouvez ajuster la hauteur selon vos besoins

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,6 +17,7 @@ class _AdminServicePageState extends State<AdminServicePage> {
   final List<String> _roles = ['Propriétaire', 'Locataire', 'admin'];
   String _selectedRole = 'Propriétaire';
   bool _isAdmin = false;  // Indicateur pour vérifier si l'utilisateur est un admin
+  final String baseUrl = dotenv.env['API_BASE_URL'] ?? 'https://localhost:3000';
 
   @override
   void initState() {
@@ -37,7 +39,7 @@ class _AdminServicePageState extends State<AdminServicePage> {
 
     try {
       final response = await http.get(
-        Uri.parse('http://localhost:3000/api/admin'),
+        Uri.parse('$baseUrl/api/admin'),
         headers: {
           'Authorization': 'Bearer $token',
         },
@@ -77,7 +79,7 @@ class _AdminServicePageState extends State<AdminServicePage> {
   Future<void> _fetchAccounts() async {
     if (!_isAdmin) return;
     try {
-      final response = await http.get(Uri.parse('http://localhost:3000/api/listAccounts'));
+      final response = await http.get(Uri.parse('$baseUrl/api/listAccounts'));
       if (response.statusCode == 200) {
         setState(() {
           _accounts = jsonDecode(response.body);
@@ -93,7 +95,7 @@ class _AdminServicePageState extends State<AdminServicePage> {
   Future<void> _deleteAccount(int id) async {
     if (!_isAdmin) return;
     try {
-      final response = await http.delete(Uri.parse('http://localhost:3000/api/deleteAccount/$id'));
+      final response = await http.delete(Uri.parse('$baseUrl/api/deleteAccount/$id'));
       if (response.statusCode == 200) {
         _showSnackBar('Compte supprimé avec succès');
         _fetchAccounts();
@@ -105,23 +107,27 @@ class _AdminServicePageState extends State<AdminServicePage> {
     }
   }
 
-  Future<void> _updateAccount(int id_user, String nom, String prenom, String adresse, String email, String password, String role) async {
+  Future<void> _updateAccount(int id_user, String? nom, String? prenom, String? adresse, String? email, String? password, String? role) async {
     if (!_isAdmin) return;
+
+    // Créer un map avec uniquement les champs non nuls
+    final updateFields = <String, dynamic>{};
+    if (nom != null && nom.isNotEmpty) updateFields['nom'] = nom;
+    if (prenom != null && prenom.isNotEmpty) updateFields['prenom'] = prenom;
+    if (adresse != null && adresse.isNotEmpty) updateFields['adresse'] = adresse;
+    if (email != null && email.isNotEmpty) updateFields['email'] = email;
+    if (password != null && password.isNotEmpty) updateFields['password'] = password;
+    if (role != null && role.isNotEmpty) updateFields['role'] = role;
+
     try {
       final response = await http.put(
-        Uri.parse('http://localhost:3000/api/updateAccount/$id_user'),
+        Uri.parse('$baseUrl/api/updateAccount/$id_user'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
-        body: jsonEncode({
-          'nom': nom,
-          'prenom': prenom,
-          'adresse': adresse,
-          'email': email,
-          'password': password,
-          'role': role,
-        }),
+        body: jsonEncode(updateFields),
       );
+
       if (response.statusCode == 200) {
         _showSnackBar('Compte mis à jour avec succès');
         _fetchAccounts();
@@ -137,7 +143,7 @@ class _AdminServicePageState extends State<AdminServicePage> {
     if (!_isAdmin) return;
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:3000/api/createAccount'),
+        Uri.parse('$baseUrl/api/createAccount'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
