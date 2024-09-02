@@ -70,21 +70,6 @@ class _DrawerWidgetState extends State<DrawerWidget> {
               GoRouter.of(context).go('/logements');
             },
           ),
-          ListTile(
-            leading: const Icon(Icons.contact_mail),
-            title: const Text('Contact'),
-            onTap: () {
-              GoRouter.of(context).go('/contact');
-            },
-          ),
-          if (userRole == 'Propriétaire') // Afficher pour les propriétaires
-            ListTile(
-              leading: const Icon(Icons.person),
-              title: const Text('Espace propriétaire'),
-              onTap: () {
-                GoRouter.of(context).go('/espace-proprietaire');
-              },
-            ),
           if (userRole == 'admin') // Afficher pour les admins
             ListTile(
               leading: const Icon(Icons.admin_panel_settings),
@@ -93,6 +78,28 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                 GoRouter.of(context).go('/admin');
               },
             ),
+          if (userRole == 'Propriétaire') // Afficher pour les propriétaires
+            ListTile(
+              leading: const Icon(Icons.person),
+              title: const Text('Espace propriétaire'),
+              onTap: () {
+                GoRouter.of(context).go('/espace-proprietaire');
+              },
+            ),
+          ListTile(
+            leading: const Icon(Icons.contact_mail),
+            title: const Text('Contact'),
+            onTap: () {
+              GoRouter.of(context).go('/contact');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.info),
+            title: const Text('A propos'),
+            onTap: () {
+              GoRouter.of(context).go('/about');
+            },
+          ),
           if (isLoggedIn)
             ListTile(
               leading: const Icon(Icons.logout),

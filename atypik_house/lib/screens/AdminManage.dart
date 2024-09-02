@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../widgets/commons/drawer_widget.dart';
+import '../widgets/commons/footer.dart'; // Assurez-vous d'importer le bon fichier
 
 class AdminServicePage extends StatefulWidget {
   @override
@@ -46,7 +47,6 @@ class _AdminServicePageState extends State<AdminServicePage> {
       );
 
       if (response.statusCode == 200) {
-        // Si la réponse est correcte, on vérifie également le rôle du token
         final decodedToken = jwtDecode(token);
         final role = decodedToken['user']['role'] as String;
 
@@ -54,7 +54,7 @@ class _AdminServicePageState extends State<AdminServicePage> {
           setState(() {
             _isAdmin = true;
           });
-          _fetchAccounts();  // Charger les comptes uniquement si l'utilisateur est admin
+          _fetchAccounts();
         } else {
           GoRouter.of(context).go('/unauthorized');
         }
@@ -66,7 +66,6 @@ class _AdminServicePageState extends State<AdminServicePage> {
     }
   }
 
-  // Fonction utilitaire pour décoder le token JWT
   Map<String, dynamic> jwtDecode(String token) {
     final parts = token.split('.');
     if (parts.length != 3) {
@@ -110,7 +109,6 @@ class _AdminServicePageState extends State<AdminServicePage> {
   Future<void> _updateAccount(int id_user, String? nom, String? prenom, String? adresse, String? email, String? password, String? role) async {
     if (!_isAdmin) return;
 
-    // Créer un map avec uniquement les champs non nuls
     final updateFields = <String, dynamic>{};
     if (nom != null && nom.isNotEmpty) updateFields['nom'] = nom;
     if (prenom != null && prenom.isNotEmpty) updateFields['prenom'] = prenom;
@@ -374,44 +372,51 @@ class _AdminServicePageState extends State<AdminServicePage> {
         ],
       ),
       drawer: DrawerWidget(),
-      body: ListView.builder(
-        itemCount: _accounts.length,
-        itemBuilder: (context, index) {
-          final account = _accounts[index];
-          final email = account['email'] ?? 'Email non disponible';
-          final role = account['role'] ?? 'Rôle non disponible';
-          final idUser = account['id_user'] ?? -1;
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              itemCount: _accounts.length,
+              itemBuilder: (context, index) {
+                final account = _accounts[index];
+                final email = account['email'] ?? 'Email non disponible';
+                final role = account['role'] ?? 'Rôle non disponible';
+                final idUser = account['id_user'] ?? -1;
 
-          return ListTile(
-            title: Text(email),
-            subtitle: Text('Rôle: $role'),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.edit),
-                  onPressed: () {
-                    if (idUser != -1) {
-                      _showEditDialog(idUser, account['nom'] ?? '', account['prenom'] ?? '', account['adresse'] ?? '', email, role);
-                    } else {
-                      _showSnackBar('Identifiant utilisateur non disponible');
-                    }
-                  },
-                ),
-                IconButton(
-                  icon: Icon(Icons.delete),
-                  onPressed: () {
-                    if (idUser != -1) {
-                      _deleteAccount(idUser);
-                    } else {
-                      _showSnackBar('Identifiant utilisateur non disponible');
-                    }
-                  },
-                ),
-              ],
+                return ListTile(
+                  title: Text(email),
+                  subtitle: Text('Rôle: $role'),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.edit),
+                        onPressed: () {
+                          if (idUser != -1) {
+                            _showEditDialog(idUser, account['nom'] ?? '', account['prenom'] ?? '', account['adresse'] ?? '', email, role);
+                          } else {
+                            _showSnackBar('Identifiant utilisateur non disponible');
+                          }
+                        },
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.delete),
+                        onPressed: () {
+                          if (idUser != -1) {
+                            _deleteAccount(idUser);
+                          } else {
+                            _showSnackBar('Identifiant utilisateur non disponible');
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
-          );
-        },
+          ),
+          Footer(),  // Le footer sera collé en bas
+        ],
       ),
     );
   }
