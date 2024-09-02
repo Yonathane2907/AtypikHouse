@@ -1,13 +1,24 @@
-import 'package:atypik_house/widgets/login/login_widget.dart';
 import 'package:flutter/material.dart';
-
 import '../models/user.dart';
 import '../widgets/commons/appbar_widget.dart';
 import '../services/api/user_service.dart';
 import '../widgets/commons/drawer_widget.dart';
+import '../widgets/login/login_widget.dart';
+import '../widgets/commons/footer.dart';
 
 void main() {
-  runApp(const LoginScreen());
+  runApp(const LoginApp());
+}
+
+class LoginApp extends StatelessWidget {
+  const LoginApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: const LoginScreen(),
+    );
+  }
 }
 
 class LoginScreen extends StatefulWidget {
@@ -30,12 +41,22 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       appBar: const AppbarWidget(),
       drawer: DrawerWidget(),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const LoginWidget(),
-          ],
-        ),
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const LoginWidget(),
+                  // Ajoutez d'autres widgets ici si nécessaire
+                ],
+              ),
+            ),
+          ),
+          Footer(), // Le footer sera collé en bas
+        ],
       ),
     );
   }

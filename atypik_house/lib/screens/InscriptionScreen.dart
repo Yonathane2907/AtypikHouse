@@ -1,15 +1,10 @@
-import 'package:atypik_house/widgets/login/login_widget.dart';
 import 'package:flutter/material.dart';
-
 import '../models/user.dart';
 import '../widgets/commons/appbar_widget.dart';
 import '../services/api/user_service.dart';
 import '../widgets/commons/drawer_widget.dart';
 import '../widgets/login/inscription_widget.dart';
-
-void main() {
-  runApp(const InscriptionApp());
-}
+import '../widgets/commons/footer.dart';
 
 class InscriptionApp extends StatelessWidget {
   const InscriptionApp({super.key});
@@ -18,7 +13,7 @@ class InscriptionApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(title: const Text('Login')),
+        appBar: AppBar(title: const Text('Inscription')),
         body: const InscriptionScreen(),
       ),
     );
@@ -28,10 +23,10 @@ class InscriptionApp extends StatelessWidget {
 class InscriptionScreen extends StatefulWidget {
   const InscriptionScreen({super.key});
   @override
-  State<InscriptionScreen> createState() => _LoginScreenState();
+  State<InscriptionScreen> createState() => _InscriptionScreenState();
 }
 
-class _LoginScreenState extends State<InscriptionScreen> {
+class _InscriptionScreenState extends State<InscriptionScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late Future<List<User>> futureUsers;
 
@@ -45,12 +40,23 @@ class _LoginScreenState extends State<InscriptionScreen> {
     return Scaffold(
       appBar: const AppbarWidget(),
       drawer: DrawerWidget(),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const InscriptionWidget(),
-          ],
-        ),
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const InscriptionWidget(),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Footer(), // Le footer sera collé en bas
+        ],
       ),
     );
   }

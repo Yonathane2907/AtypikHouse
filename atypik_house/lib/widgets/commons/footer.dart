@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 
 class Footer extends StatelessWidget {
   @override
@@ -37,7 +38,12 @@ class Footer extends StatelessWidget {
                   children: [
                     Text('Liens utiles', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                     TextButton(child: Text('CGV', style: TextStyle(color: Colors.white)), onPressed: () {}),
-                    TextButton(child: Text('Mentions légales', style: TextStyle(color: Colors.white)), onPressed: () {}),
+                    TextButton(
+                      child: Text('Mentions légales', style: TextStyle(color: Colors.white)),
+                      onPressed: () {
+                        GoRouter.of(context).go('/mentions-legales'); // Assurez-vous que '/mentions-legales' est le chemin correct
+                      },
+                    )
                   ],
                 ),
               ),

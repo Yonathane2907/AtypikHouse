@@ -2,10 +2,14 @@ import 'package:atypik_house/screens/ContactScreen.dart';
 import 'package:atypik_house/screens/HomeScreen.dart';
 import 'package:atypik_house/screens/InscriptionScreen.dart';
 import 'package:atypik_house/screens/LogementsScreen.dart';
-import 'package:atypik_house/screens/testImageUpload.dart';
+import 'package:atypik_house/screens/AddLogement.dart';
 import 'package:go_router/go_router.dart';
+import '../screens/AboutScreen.dart';
+import '../screens/LegalNotice.dart';
 import '../screens/LoginScreen.dart';
+import 'package:atypik_house/screens/AdminManage.dart';
 import '../main.dart';
+import '../screens/UnauthorisedScreen.dart';
 
 class RouterService {
   // lister les routes
@@ -47,6 +51,26 @@ class RouterService {
           path: '/images',
           name: 'images',
           builder: (context, state) => ImagePickerUpload(),
+        ),
+        GoRoute(
+          path: '/admin',
+          name: 'admin',
+          builder: (context, state) => AdminServicePage(),
+        ),
+        GoRoute(
+          path: '/unauthorized',
+          name: 'unauthorized',
+          builder: (context, state) => UnauthorizedPage(),
+        ),
+        GoRoute(
+          path: '/about',
+          name: 'about',
+          builder: (context, state) => AboutPage(),
+        ),
+        GoRoute(
+          path: '/mentions-legales',
+          name: 'legal',
+          builder: (context, state) => LegalNoticePage(),
         ),
       ],
     );

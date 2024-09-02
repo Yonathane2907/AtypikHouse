@@ -11,6 +11,7 @@ class DrawerWidget extends StatefulWidget {
 
 class _DrawerWidgetState extends State<DrawerWidget> {
   bool isLoggedIn = false;
+  String? userRole; // Ajout du rôle de l'utilisateur
 
   @override
   void initState() {
@@ -21,8 +22,10 @@ class _DrawerWidgetState extends State<DrawerWidget> {
   Future<void> _checkAuthentication() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('jwt_token');
+    final role = prefs.getString('user_role'); // Supposons que le rôle soit stocké dans SharedPreferences
     setState(() {
       isLoggedIn = token != null;
+      userRole = role;
     });
   }
 
@@ -37,8 +40,6 @@ class _DrawerWidgetState extends State<DrawerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final currentPath = GoRouter.of(context).location;
-
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -67,23 +68,36 @@ class _DrawerWidgetState extends State<DrawerWidget> {
             title: const Text('Nos habitats'),
             onTap: () {
               GoRouter.of(context).go('/logements');
-              // Ajoutez ici la navigation vers la page "Nos habitats"
             },
           ),
+          if (userRole == 'admin') // Afficher pour les admins
+            ListTile(
+              leading: const Icon(Icons.admin_panel_settings),
+              title: const Text('Administration'),
+              onTap: () {
+                GoRouter.of(context).go('/admin');
+              },
+            ),
+          if (userRole == 'Propriétaire') // Afficher pour les propriétaires
+            ListTile(
+              leading: const Icon(Icons.person),
+              title: const Text('Espace propriétaire'),
+              onTap: () {
+                GoRouter.of(context).go('/espace-proprietaire');
+              },
+            ),
           ListTile(
             leading: const Icon(Icons.contact_mail),
             title: const Text('Contact'),
             onTap: () {
               GoRouter.of(context).go('/contact');
-              // Ajoutez ici la navigation vers la page "Contact"
             },
           ),
           ListTile(
-            leading: const Icon(Icons.person),
-            title: const Text('Espace propriétaire'),
+            leading: const Icon(Icons.info),
+            title: const Text('A propos'),
             onTap: () {
-              Navigator.pop(context);
-              // Ajoutez ici la navigation vers la page "Espace propriétaire"
+              GoRouter.of(context).go('/about');
             },
           ),
           if (isLoggedIn)
@@ -91,14 +105,16 @@ class _DrawerWidgetState extends State<DrawerWidget> {
               leading: const Icon(Icons.logout),
               title: const Text('Déconnexion'),
               onTap: () async {
+                // Supprimer les informations de stockage
                 final prefs = await SharedPreferences.getInstance();
                 await prefs.remove('jwt_token');
+                await prefs.remove('user_role');
                 setState(() {
                   isLoggedIn = false;
+                  userRole = null;
                 });
                 _showSnackBar('Déconnecté avec succès.');
-                GoRouter.of(context).go('/login');
-                Navigator.pop(context);
+                GoRouter.of(context).go('/');
               },
             )
           else
@@ -107,7 +123,6 @@ class _DrawerWidgetState extends State<DrawerWidget> {
               title: const Text('Connexion'),
               onTap: () {
                 GoRouter.of(context).go('/login');
-                Navigator.pop(context);
               },
             ),
           if (!isLoggedIn)
@@ -116,7 +131,6 @@ class _DrawerWidgetState extends State<DrawerWidget> {
               title: const Text('Inscription'),
               onTap: () {
                 GoRouter.of(context).go('/inscription');
-                Navigator.pop(context);
               },
             ),
         ],
