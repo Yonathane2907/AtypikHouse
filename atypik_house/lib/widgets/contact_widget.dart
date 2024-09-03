@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class ContactForm extends StatefulWidget {
   const ContactForm({Key? key}) : super(key: key);
@@ -14,19 +16,49 @@ class _ContactFormState extends State<ContactForm> {
   final TextEditingController _messageController = TextEditingController();
   String? _errorMessage;
 
-  void _submitForm() {
+  void _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      // Logic to handle form submission, e.g., sending data to an API or email
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Message envoyé avec succès !'),
-          duration: Duration(seconds: 2),
-        ),
-      );
-      // Clear the form
-      _nameController.clear();
-      _emailController.clear();
-      _messageController.clear();
+      final String name = _nameController.text;
+      final String email = _emailController.text;
+      final String message = _messageController.text;
+
+      try {
+        // Envoyer les données au backend
+        final response = await http.post(
+          Uri.parse('https://92.113.27.31/api/send-email'), // Remplacez par l'URL de votre backend
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode(<String, String>{
+            'name': name,
+            'email': email,
+            'message': message,
+          }),
+        );
+
+        if (response.statusCode == 200) {
+          // Affiche un message de succès
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Message envoyé avec succès !'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+
+          // Vide le formulaire
+          _nameController.clear();
+          _emailController.clear();
+          _messageController.clear();
+        } else {
+          setState(() {
+            _errorMessage = 'Échec de l\'envoi du message : ${response.reasonPhrase}';
+          });
+        }
+      } catch (e) {
+        setState(() {
+          _errorMessage = 'Erreur lors de l\'envoi du message : $e';
+        });
+      }
     }
   }
 
