@@ -3,10 +3,11 @@
 const express = require('express');
 const mysql = require('mysql');
 const cors = require('cors'); // Importe le middleware CORS
-
 const app = express();
+const bodyParser = require('body-parser');
 const port = 3000;
-
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 // Configuration de la connexion à la base de données MySQL
 const connection = mysql.createConnection({
     host: 'localhost',
@@ -14,7 +15,6 @@ const connection = mysql.createConnection({
     password: '',
     database: 'atypik_house'
 });
-
 // Connexion à MySQL
 connection.connect(err => {
     if (err) {
@@ -23,24 +23,15 @@ connection.connect(err => {
     }
     console.log('Connected to MySQL as ID:', connection.threadId);
 });
-
 // Utilisation du middleware CORS
 app.use(cors());
-
-// Endpoint pour récupérer tous les utilisateurs
-app.get('/api/users', (req, res) => {
-    const sql = 'SELECT * FROM test';
-    connection.query(sql, (err, results) => {
-        if (err) {
-            console.error('Error executing query:', err.stack);
-            res.status(500).json({ error: 'Internal Server Error' });
-            return;
-        }
-        res.json(results);
-    });
-});
-
+const PORT = process.env.PORT || 3000;
+// Importer les routes
+const userRoutes = require('./logement');
+// Utiliser les routes
+app.use('/api', userRoutes);
 // Écoute du serveur Express sur le port spécifié
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
 });
+

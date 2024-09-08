@@ -1,4 +1,7 @@
+import 'package:atypik_house/widgets/LogementsTypes_widget.dart';
+import 'package:atypik_house/widgets/footer.dart';
 import 'package:flutter/material.dart';
+import '../widgets/commons/Carousel_widget.dart';
 import '../widgets/commons/appbar_widget.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -19,6 +22,13 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           children: [
             const Text('Home Screen'),
+            const CarouselWidget(),
+            const LogementsTypesWidget(),
+            Footer(),
+
+
+
+
           ],
         ),
       ),
