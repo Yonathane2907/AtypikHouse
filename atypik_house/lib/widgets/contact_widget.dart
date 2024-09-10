@@ -25,7 +25,7 @@ class _ContactFormState extends State<ContactForm> {
       try {
         // Envoyer les données au backend
         final response = await http.post(
-          Uri.parse('https://92.113.27.31/api/send-email'), // Remplacez par l'URL de votre backend
+          Uri.parse('https://api.dsp-dev4-gv-kt-yb.fr/api/send-email'), // Remplacez par l'URL de votre backend
           headers: <String, String>{
             'Content-Type': 'application/json; charset=UTF-8',
           },
