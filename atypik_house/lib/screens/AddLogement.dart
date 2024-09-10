@@ -54,7 +54,7 @@ class _ImagePickerUploadState extends State<ImagePickerUpload> {
     if (_imageUrl == null) return;
 
     try {
-      Uri uri = Uri.parse('https://92.113.27.31/api/upload'); // Remplace par l'URL de ton serveur
+      Uri uri = Uri.parse('https://api.dsp-dev4-gv-kt-yb.fr/api/upload'); // Remplace par l'URL de ton serveur
 
       if (kIsWeb) {
         // Code pour le web

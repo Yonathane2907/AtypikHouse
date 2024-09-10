@@ -85,7 +85,7 @@ class LogementsScreen extends StatelessWidget {
                                         child: ClipRRect(
                                           borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
                                           child: Image.network(
-                                            'https://92.113.27.31/${logement.image_path}',
+                                            'https://api.dsp-dev4-gv-kt-yb.fr/${logement.image_path}',
                                             fit: BoxFit.cover,
                                           ),
                                         ),
@@ -162,7 +162,7 @@ class LogementDetailScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Image.network(
-              'https://92.113.27.31/${logement.image_path}',
+              'https://api.dsp-dev4-gv-kt-yb.fr/${logement.image_path}',
               fit: BoxFit.cover,
               height: 300, // Hauteur fixe pour la vue détail
               width: double.infinity,
