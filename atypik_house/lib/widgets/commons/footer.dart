@@ -37,7 +37,9 @@ class Footer extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('Liens utiles', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                    TextButton(child: Text('CGV', style: TextStyle(color: Colors.white)), onPressed: () {}),
+                    TextButton(child: Text('CGV', style: TextStyle(color: Colors.white)), onPressed: () {
+                      GoRouter.of(context).go('/cgv'); // Assurez-vous que '/mentions-legales' est le chemin correct
+                    }),
                     TextButton(
                       child: Text('Mentions légales', style: TextStyle(color: Colors.white)),
                       onPressed: () {
