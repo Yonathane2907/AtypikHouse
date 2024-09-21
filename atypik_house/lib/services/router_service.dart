@@ -1,3 +1,4 @@
+import 'package:atypik_house/screens/CommercialScreen.dart';
 import 'package:atypik_house/screens/ContactScreen.dart';
 import 'package:atypik_house/screens/HomeScreen.dart';
 import 'package:atypik_house/screens/InscriptionScreen.dart';
@@ -50,7 +51,7 @@ class RouterService {
         GoRoute(
           path: '/images',
           name: 'images',
-          builder: (context, state) => ImagePickerUpload(),
+          builder: (context, state) => AddAccommodation(),
         ),
         GoRoute(
           path: '/admin',
@@ -71,6 +72,11 @@ class RouterService {
           path: '/mentions-legales',
           name: 'legal',
           builder: (context, state) => LegalNoticePage(),
+        ),
+        GoRoute(
+          path: '/commercial',
+          name: 'commercial',
+          builder: (context, state) => CommercialPage(),
         ),
       ],
     );

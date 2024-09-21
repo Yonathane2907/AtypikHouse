@@ -90,6 +90,33 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             CarouselSection(),
             const VillaSection(),
+            // Section Projet étudiant
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Container(
+                color: Colors.grey[200],
+                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: const [
+                    Text(
+                      'Projet étudiant',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      'Ce site web a été réalisé dans le cadre d\'un projet étudiant. ',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 16, color: Colors.black54),
+                    ),
+                  ],
+                ),
+              ),
+            ),
             Footer(),
           ],
         ),

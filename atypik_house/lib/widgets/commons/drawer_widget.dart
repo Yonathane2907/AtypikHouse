@@ -81,9 +81,9 @@ class _DrawerWidgetState extends State<DrawerWidget> {
           if (userRole == 'Propriétaire') // Afficher pour les propriétaires
             ListTile(
               leading: const Icon(Icons.person),
-              title: const Text('Espace propriétaire'),
+              title: const Text('Ajouter un logement'),
               onTap: () {
-                GoRouter.of(context).go('/espace-proprietaire');
+                GoRouter.of(context).go('/images');
               },
             ),
           ListTile(
@@ -91,6 +91,13 @@ class _DrawerWidgetState extends State<DrawerWidget> {
             title: const Text('Contact'),
             onTap: () {
               GoRouter.of(context).go('/contact');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.account_balance_outlined),
+            title: const Text('Louer votre bien'),
+            onTap: () {
+              GoRouter.of(context).go('/commercial');
             },
           ),
           ListTile(
