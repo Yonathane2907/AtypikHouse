@@ -9,7 +9,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../widgets/commons/drawer_widget.dart';
 
 class AddAccommodation extends StatefulWidget {
@@ -29,16 +28,12 @@ class _AddAccommodationState extends State<AddAccommodation> {
   DateTime _creationDate = DateTime.now();
   bool _isLoading = false;
   bool _isOwner = false;
+  int? _proprietaireId;
 
   @override
   void initState() {
     super.initState();
     _checkUserRole();
-  }
-
-  Future<String?> getToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('jwt_token');
   }
 
   Future<void> _checkUserRole() async {
@@ -56,12 +51,34 @@ class _AddAccommodationState extends State<AddAccommodation> {
         setState(() {
           _isOwner = true;
         });
+        await _getProprietaireId(decodedToken['user']['id']); // Récupérer le proprietaire_id
       } else {
         Navigator.of(context).pushReplacementNamed('/unauthorized');
       }
     } catch (e) {
       Navigator.of(context).pushReplacementNamed('/unauthorized');
     }
+  }
+
+  Future<void> _getProprietaireId(int userId) async {
+    try {
+      final response = await http.get(Uri.parse('https://api.dsp-dev4-gv-kt-yb.fr/api/proprietaire/$userId'));
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          _proprietaireId = data['id_proprietaire']; // Utiliser le proprietaire_id
+        });
+      } else {
+        _showMessage(context, 'Erreur lors de la récupération du proprietaire_id.');
+      }
+    } catch (e) {
+      _showMessage(context, 'Erreur lors de la connexion au serveur : $e');
+    }
+  }
+
+  Future<String?> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('jwt_token');
   }
 
   Map<String, dynamic> jwtDecode(String token) {
@@ -124,7 +141,7 @@ class _AddAccommodationState extends State<AddAccommodation> {
   }
 
   Future<void> _uploadAccommodation() async {
-    if (!_isOwner) return;
+    if (!_isOwner || _proprietaireId == null) return;
 
     if (!_validateFields()) return;
 
@@ -133,7 +150,7 @@ class _AddAccommodationState extends State<AddAccommodation> {
     });
 
     try {
-      Uri uri = Uri.parse('http://localhost:3000/api/upload');
+      Uri uri = Uri.parse('https://api.dsp-dev4-gv-kt-yb.fr/api/upload');
 
       final request = http.MultipartRequest('POST', uri)
         ..fields['titre'] = _titleController.text
@@ -142,8 +159,10 @@ class _AddAccommodationState extends State<AddAccommodation> {
         ..fields['capacite'] = _capacityController.text
         ..fields['nombre_couchage'] = _bedsController.text
         ..fields['prix'] = _priceController.text
-        ..fields['date_creation'] = _creationDate.toIso8601String();
+        ..fields['date_creation'] = _creationDate.toIso8601String()
+        ..fields['proprietaire_id'] = _proprietaireId.toString(); // Utiliser le proprietaire_id
 
+      print(_proprietaireId);
       if (_imageUrl != null) {
         if (kIsWeb) {
           if (_webImageBytes != null) {

@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 
 class LogementsService {
   Future<List<String>> fetchLogements() async {
-    final response = await http.get(Uri.parse('http://localhost:3000/api/getLogements'));
+    final response = await http.get(Uri.parse('https://api.dsp-dev4-gv-kt-yb.fr/api/getLogements'));
 
     if (response.statusCode == 200) {
       List<dynamic> logementsJson = json.decode(response.body);

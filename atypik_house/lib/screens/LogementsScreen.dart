@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/logement.dart';
-import '../services/api/logement_service.dart';
+import '../services/api/logement_service.dart'; // Service pour récupérer les logements
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import '../widgets/commons/appbar_widget.dart';
 import '../widgets/commons/drawer_widget.dart';
 import '../widgets/commons/footer.dart'; // Import du widget Footer
+import '../models/Commentaire.dart';
 
 class LogementsScreen extends StatefulWidget {
   const LogementsScreen({Key? key}) : super(key: key);
@@ -211,16 +216,85 @@ class _LogementsScreenState extends State<LogementsScreen> {
   }
 }
 
-class LogementDetailScreen extends StatelessWidget {
+class LogementDetailScreen extends StatefulWidget {
   final Logement logement;
 
   const LogementDetailScreen({Key? key, required this.logement}) : super(key: key);
 
   @override
+  _LogementDetailScreenState createState() => _LogementDetailScreenState();
+}
+
+class _LogementDetailScreenState extends State<LogementDetailScreen> {
+  List<Commentaire> commentaires = [];
+  final TextEditingController _commentController = TextEditingController();
+  String? prenom; // Pour stocker le prénom de l'utilisateur
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCommentaires();
+    _getUserInfo(); // Récupérer le prénom de l'utilisateur
+  }
+
+  Future<String?> getToken() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('jwt_token'); // 'token' est la clé sous laquelle tu as stocké le token
+  }
+
+  // Récupérer le prénom de l'utilisateur à partir du token JWT
+  void _getUserInfo() async {
+    String? token = await getToken(); // Récupérer le token JWT
+    if (token != null) {
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+      print(decodedToken);
+      setState(() {
+        prenom = decodedToken['user']['prenom']; // Récupérer le prénom
+      });
+    }
+  }
+
+  // Méthode pour récupérer les commentaires depuis le backend
+  Future<void> _fetchCommentaires() async {
+    final response = await http.get(
+      Uri.parse('https://api.dsp-dev4-gv-kt-yb.fr/api/logements/${widget.logement.id_logement}/commentaires'),
+    );
+    if (response.statusCode == 200) {
+      List<dynamic> commentairesJson = json.decode(response.body);
+      setState(() {
+        commentaires = commentairesJson
+            .map((commentJson) => Commentaire.fromJson(commentJson))
+            .toList();
+      });
+    } else {
+      // Gérer l'erreur
+    }
+  }
+
+  // Méthode pour ajouter un commentaire
+  Future<void> _addCommentaire(String contenu) async {
+    final response = await http.post(
+      Uri.parse('https://api.dsp-dev4-gv-kt-yb.fr/api/logements/${widget.logement.id_logement}/commentaires'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({'auteur': prenom ?? 'Anonyme', 'contenu': contenu}), // Utiliser le prénom ou "Anonyme"
+    );
+    if (response.statusCode == 201) {
+      setState(() {
+        commentaires.add(
+          Commentaire(auteur: prenom ?? 'Anonyme', contenu: contenu, date: DateTime.now()),
+        );
+      });
+      _commentController.clear();
+    } else {
+      // Gérer l'erreur
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(logement.titre),
+        title: Text(widget.logement.titre),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -228,14 +302,14 @@ class LogementDetailScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Image.network(
-              'https://api.dsp-dev4-gv-kt-yb.fr/${logement.image_path}',
+              'https://api.dsp-dev4-gv-kt-yb.fr/${widget.logement.image_path}',
               fit: BoxFit.cover,
               height: 300,
               width: double.infinity,
             ),
             const SizedBox(height: 16),
             Text(
-              logement.titre,
+              widget.logement.titre,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
                 fontSize: 24,
@@ -243,19 +317,59 @@ class LogementDetailScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              logement.description,
+              widget.logement.description,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: Colors.black54,
               ),
             ),
             const SizedBox(height: 16),
             Text(
-              '${logement.prix}€ / nuit',
+              '${widget.logement.prix}€ / nuit',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: Colors.green,
                 fontSize: 20,
               ),
+            ),
+            const SizedBox(height: 16),
+            // Section des commentaires
+            Expanded(
+              child: ListView.builder(
+                itemCount: commentaires.length,
+                itemBuilder: (context, index) {
+                  final commentaire = commentaires[index];
+                  return ListTile(
+                    title: Text(commentaire.auteur),
+                    subtitle: Text(commentaire.contenu),
+                    trailing: Text(
+                      '${commentaire.date.day}/${commentaire.date.month}/${commentaire.date.year}',
+                      style: const TextStyle(color: Colors.grey),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 16),
+            // Champ pour ajouter un commentaire
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _commentController,
+                    decoration: const InputDecoration(
+                      hintText: 'Ajouter un commentaire',
+                    ),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.send),
+                  onPressed: () {
+                    if (_commentController.text.isNotEmpty) {
+                      _addCommentaire(_commentController.text);
+                    }
+                  },
+                ),
+              ],
             ),
           ],
         ),
@@ -263,3 +377,5 @@ class LogementDetailScreen extends StatelessWidget {
     );
   }
 }
+
+

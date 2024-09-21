@@ -86,6 +86,14 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                 GoRouter.of(context).go('/images');
               },
             ),
+          if (userRole == 'Propriétaire')
+          ListTile(
+            leading: const Icon(Icons.person),
+            title: const Text('Mes logements'),
+            onTap: () {
+              GoRouter.of(context).go('/mes-logements');
+            },
+          ),
           ListTile(
             leading: const Icon(Icons.contact_mail),
             title: const Text('Contact'),

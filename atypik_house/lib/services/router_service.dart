@@ -4,6 +4,7 @@ import 'package:atypik_house/screens/HomeScreen.dart';
 import 'package:atypik_house/screens/InscriptionScreen.dart';
 import 'package:atypik_house/screens/LogementsScreen.dart';
 import 'package:atypik_house/screens/AddLogement.dart';
+import 'package:atypik_house/screens/MesLogementsScreen.dart';
 import 'package:go_router/go_router.dart';
 import '../screens/AboutScreen.dart';
 import '../screens/CGVScreen.dart';
@@ -83,6 +84,11 @@ class RouterService {
           path: '/cgv',
           name: 'vente',
           builder: (context, state) => ContratGeneralVente(),
+        ),
+        GoRoute(
+          path: '/mes-logements',
+          name: 'mes-logements',
+          builder: (context, state) => MyLogementsPage(),
         ),
 
       ],

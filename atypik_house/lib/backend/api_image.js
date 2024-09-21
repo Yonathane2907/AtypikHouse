@@ -21,28 +21,29 @@ const upload = multer({ storage: storage });
 router.post('/upload', upload.single('image'), async (req, res, next) => {
     try {
         const image = req.file;
-        const { titre, description, adresse, capacite, nombre_couchage, prix } = req.body;
+        const { titre, description, adresse, capacite, nombre_couchage, prix, proprietaire_id } = req.body;
 
         if (!image) {
             return res.status(400).json({ message: 'No file uploaded' });
         }
 
-        if (!titre || !description || !adresse || !capacite || !nombre_couchage || !prix) {
+        if (!titre || !description || !adresse || !capacite || !nombre_couchage || !prix || !proprietaire_id) {
             return res.status(400).json({ message: 'Tous les champs sont requis.' });
         }
 
         const imagePath = `uploads/${image.filename}`;
+
         const sql =
             `INSERT INTO logement (proprietaire_id, image_path, titre, description, adresse, capacite, nombre_couchage, prix) 
-             VALUES (1, ?, ?, ?, ?, ?, ?, ?)`;
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
 
         // Exécuter la requête avec `await`
-        const [result] = await db.query(sql, [imagePath, titre, description, adresse, capacite, nombre_couchage, prix]);
+        await db.query(sql, [proprietaire_id, imagePath, titre, description, adresse, capacite, nombre_couchage, prix]);
 
         res.json({ message: 'Logement ajouté avec succès', imagePath });
     } catch (err) {
         console.error('Database error:', err);
-        next(err); // Passer l'erreur au middleware de gestion des erreurs
+        next(err);
     }
 });
 
