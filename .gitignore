@@ -1,0 +1,41 @@
+# Flutter/Dart related
+.dart_tool/
+.build/
+.packages
+.idea/
+*.iml
+.vscode/
+.android/
+.ios/
+build/
+*.flutter-plugins
+*.flutter-plugins-dependencies
+.flutter-plugins
+.flutter-plugins-dependencies
+flutter_export_environment.sh
+generated_plugin_registrant.dart
+.macos/
+
+# Node.js related
+node_modules/
+npm-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.env
+
+# General
+.DS_Store
+*.log
+*.tmp
+*.swp
+
+# macOS related
+*.DS_Store
+
+# Windows related
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux related
+*~

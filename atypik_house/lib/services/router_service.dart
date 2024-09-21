@@ -6,6 +6,7 @@ import 'package:atypik_house/screens/LogementsScreen.dart';
 import 'package:atypik_house/screens/AddLogement.dart';
 import 'package:go_router/go_router.dart';
 import '../screens/AboutScreen.dart';
+import '../screens/CGVScreen.dart';
 import '../screens/LegalNotice.dart';
 import '../screens/LoginScreen.dart';
 import 'package:atypik_house/screens/AdminManage.dart';
@@ -78,6 +79,12 @@ class RouterService {
           name: 'commercial',
           builder: (context, state) => CommercialPage(),
         ),
+        GoRoute(
+          path: '/cgv',
+          name: 'vente',
+          builder: (context, state) => ContratGeneralVente(),
+        ),
+
       ],
     );
   }
