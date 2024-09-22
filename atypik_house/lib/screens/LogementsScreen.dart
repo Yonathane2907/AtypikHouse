@@ -294,7 +294,7 @@ class _LogementDetailScreenState extends State<LogementDetailScreen> {
   Future<void> _makeReservation(DateTime startDate, DateTime endDate) async {
     String? token = await getToken();
     final response = await http.post(
-      Uri.parse('https://api.dsp-dev4-gv-kt-yb.fr/api/api/reservation'),
+      Uri.parse('https://api.dsp-dev4-gv-kt-yb.fr/api/reservation'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
