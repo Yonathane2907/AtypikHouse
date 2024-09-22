@@ -62,6 +62,13 @@ class _LogementsScreenState extends State<LogementsScreen> {
       body: Column(
         children: [
           Padding(
+            padding: const EdgeInsets.all(16.0), // Ajoutez ici l'espace
+            child: const Text(
+              'Logements disponibles',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+          ),
+          Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
@@ -208,6 +215,7 @@ class _LogementsScreenState extends State<LogementsScreen> {
       ),
     );
   }
+
 }
 
 class LogementDetailScreen extends StatefulWidget {

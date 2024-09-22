@@ -34,30 +34,38 @@ class _LoginWidgetState extends State<LoginWidget> {
     return Form(
       key: _formKey,
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center, // Centrer le contenu
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          TextFormField(
-            controller: _emailController,
-            decoration: const InputDecoration(hintText: 'Entrez votre email'),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Veuillez saisir votre email';
-              } else if (!_emailRegExp.hasMatch(value)) {
-                return 'Veuillez saisir un email valide';
-              }
-              return null;
-            },
+          Container(
+            width: 300, // Largeur fixe pour le formulaire
+            child: TextFormField(
+              controller: _emailController,
+              decoration: const InputDecoration(hintText: 'Entrez votre email'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Veuillez saisir votre email';
+                } else if (!_emailRegExp.hasMatch(value)) {
+                  return 'Veuillez saisir un email valide';
+                }
+                return null;
+              },
+            ),
           ),
-          TextFormField(
-            controller: _passwordController,
-            obscureText: true,
-            decoration: const InputDecoration(hintText: 'Entrez votre mot de passe'),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Veuillez saisir votre mot de passe';
-              }
-              return null;
-            },
+          const SizedBox(height: 16), // Espace entre les champs
+          Container(
+            width: 300, // Largeur fixe pour le formulaire
+            child: TextFormField(
+              controller: _passwordController,
+              obscureText: true,
+              decoration: const InputDecoration(hintText: 'Entrez votre mot de passe'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Veuillez saisir votre mot de passe';
+                }
+                return null;
+              },
+            ),
           ),
           if (_errorMessage != null)
             Padding(

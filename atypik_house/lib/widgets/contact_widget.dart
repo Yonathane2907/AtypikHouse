@@ -71,6 +71,13 @@ class _ContactFormState extends State<ContactForm> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0.0, 16.0, 0.0, 46.0), // Ajoutez ici l'espace
+              child: const Text(
+                'Contactez-nous !',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+            ),
             TextFormField(
               controller: _nameController,
               decoration: const InputDecoration(

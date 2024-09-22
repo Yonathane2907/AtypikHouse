@@ -51,7 +51,8 @@ class _AddAccommodationState extends State<AddAccommodation> {
         setState(() {
           _isOwner = true;
         });
-        await _getProprietaireId(decodedToken['user']['id']); // Récupérer le proprietaire_id
+        await _getProprietaireId(
+            decodedToken['user']['id']); // Récupérer le proprietaire_id
       } else {
         Navigator.of(context).pushReplacementNamed('/unauthorized');
       }
@@ -62,14 +63,17 @@ class _AddAccommodationState extends State<AddAccommodation> {
 
   Future<void> _getProprietaireId(int userId) async {
     try {
-      final response = await http.get(Uri.parse('https://api.dsp-dev4-gv-kt-yb.fr/api/proprietaire/$userId'));
+      final response = await http.get(Uri.parse(
+          'https://api.dsp-dev4-gv-kt-yb.fr/api/proprietaire/$userId'));
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         setState(() {
-          _proprietaireId = data['id_proprietaire']; // Utiliser le proprietaire_id
+          _proprietaireId =
+          data['id_proprietaire']; // Utiliser le proprietaire_id
         });
       } else {
-        _showMessage(context, 'Erreur lors de la récupération du proprietaire_id.');
+        _showMessage(
+            context, 'Erreur lors de la récupération du proprietaire_id.');
       }
     } catch (e) {
       _showMessage(context, 'Erreur lors de la connexion au serveur : $e');
@@ -126,14 +130,16 @@ class _AddAccommodationState extends State<AddAccommodation> {
         _bedsController.text.isEmpty ||
         _priceController.text.isEmpty ||
         _imageUrl == null) {
-      _showMessage(context, 'Tous les champs sont obligatoires, y compris l\'image.');
+      _showMessage(
+          context, 'Tous les champs sont obligatoires, y compris l\'image.');
       isValid = false;
     }
 
     if (int.tryParse(_capacityController.text) == null ||
         int.tryParse(_bedsController.text) == null ||
         int.tryParse(_priceController.text) == null) {
-      _showMessage(context, 'Capacité, Nombre de couchages et Prix doivent être des entiers.');
+      _showMessage(context,
+          'Capacité, Nombre de couchages et Prix doivent être des entiers.');
       isValid = false;
     }
 
@@ -160,7 +166,8 @@ class _AddAccommodationState extends State<AddAccommodation> {
         ..fields['nombre_couchage'] = _bedsController.text
         ..fields['prix'] = _priceController.text
         ..fields['date_creation'] = _creationDate.toIso8601String()
-        ..fields['proprietaire_id'] = _proprietaireId.toString(); // Utiliser le proprietaire_id
+        ..fields['proprietaire_id'] = _proprietaireId
+            .toString(); // Utiliser le proprietaire_id
 
       print(_proprietaireId);
       if (_imageUrl != null) {
@@ -203,7 +210,8 @@ class _AddAccommodationState extends State<AddAccommodation> {
   }
 
   void _showMessage(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)));
   }
 
   @override
@@ -212,7 +220,8 @@ class _AddAccommodationState extends State<AddAccommodation> {
       return Scaffold(
         body: Center(
           child: Text(
-            'Chargement...',  // Affiche un texte pendant que la vérification du rôle est en cours
+            'Chargement...',
+            // Affiche un texte pendant que la vérification du rôle est en cours
             style: TextStyle(fontSize: 18),
           ),
         ),
@@ -224,56 +233,87 @@ class _AddAccommodationState extends State<AddAccommodation> {
         title: Text('Ajouter un Logement'),
       ),
       drawer: DrawerWidget(),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              _imageUrl == null
-                  ? Text('Aucune image sélectionnée.')
-                  : kIsWeb
-                  ? Image.memory(_webImageBytes!, height: 150)
-                  : Image.file(io.File(_imageUrl!), height: 150),
-              ElevatedButton(
-                onPressed: _pickImage,
-                child: Text('Choisir une Image'),
-              ),
-              TextField(
-                controller: _titleController,
-                decoration: InputDecoration(labelText: 'Titre'),
-              ),
-              TextField(
-                controller: _descriptionController,
-                decoration: InputDecoration(labelText: 'Description'),
-              ),
-              TextField(
-                controller: _addressController,
-                decoration: InputDecoration(labelText: 'Adresse'),
-              ),
-              TextField(
-                controller: _capacityController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(labelText: 'Capacité'),
-              ),
-              TextField(
-                controller: _bedsController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(labelText: 'Nombre de couchages'),
-              ),
-              TextField(
-                controller: _priceController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(labelText: 'Prix'),
-              ),
-              SizedBox(height: 16),
-              _isLoading
-                  ? Center(child: CircularProgressIndicator())
-                  : ElevatedButton(
-                onPressed: _uploadAccommodation,
-                child: Text('Enregistrer le Logement'),
-              ),
-            ],
+      body: Center( // Centrer le contenu
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              // Centre les champs verticalement
+              crossAxisAlignment: CrossAxisAlignment.center,
+              // Centre les champs horizontalement
+              children: <Widget>[
+                _imageUrl == null
+                    ? Text('Aucune image sélectionnée.')
+                    : kIsWeb
+                    ? Image.memory(_webImageBytes!, height: 150)
+                    : Image.file(io.File(_imageUrl!), height: 150),
+                ElevatedButton(
+                  onPressed: _pickImage,
+                  child: Text('Choisir une Image'),
+                ),
+                SizedBox(height: 16),
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 300),
+                  // Limite la largeur des champs
+                  child: TextField(
+                    controller: _titleController,
+                    decoration: InputDecoration(labelText: 'Titre'),
+                  ),
+                ),
+                SizedBox(height: 16),
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 300),
+                  child: TextField(
+                    controller: _descriptionController,
+                    decoration: InputDecoration(labelText: 'Description'),
+                  ),
+                ),
+                SizedBox(height: 16),
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 300),
+                  child: TextField(
+                    controller: _addressController,
+                    decoration: InputDecoration(labelText: 'Adresse'),
+                  ),
+                ),
+                SizedBox(height: 16),
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 300),
+                  child: TextField(
+                    controller: _capacityController,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(labelText: 'Capacité'),
+                  ),
+                ),
+                SizedBox(height: 16),
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 300),
+                  child: TextField(
+                    controller: _bedsController,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                        labelText: 'Nombre de couchages'),
+                  ),
+                ),
+                SizedBox(height: 16),
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 300),
+                  child: TextField(
+                    controller: _priceController,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(labelText: 'Prix'),
+                  ),
+                ),
+                SizedBox(height: 16),
+                _isLoading
+                    ? Center(child: CircularProgressIndicator())
+                    : ElevatedButton(
+                  onPressed: _uploadAccommodation,
+                  child: Text('Enregistrer le Logement'),
+                ),
+              ],
+            ),
           ),
         ),
       ),

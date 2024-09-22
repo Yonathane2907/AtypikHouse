@@ -42,12 +42,20 @@ class _InscriptionScreenState extends State<InscriptionScreen> {
       drawer: DrawerWidget(),
       body: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0.0, 16.0, 0.0, 16.0), // Ajoutez ici l'espace
+            child: const Text(
+              'Inscription',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+          ),
           Expanded(
             child: SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const InscriptionWidget(),
                   ],

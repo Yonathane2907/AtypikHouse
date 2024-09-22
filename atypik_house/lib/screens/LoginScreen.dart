@@ -43,6 +43,13 @@ class _LoginScreenState extends State<LoginScreen> {
       drawer: DrawerWidget(),
       body: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0.0, 16.0, 0.0, 16.0), // Ajoutez ici l'espace
+            child: const Text(
+              'Connexion',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+          ),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),

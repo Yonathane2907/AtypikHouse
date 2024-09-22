@@ -39,72 +39,95 @@ class _InscriptionWidgetState extends State<InscriptionWidget> {
     return Form(
       key: _formKey,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center, // Centrer le contenu
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          TextFormField(
-            controller: _nomController,
-            decoration: const InputDecoration(
-              hintText: 'Entrez votre nom',
+          Container(
+            width: 300, // Largeur fixe pour le formulaire
+            child: TextFormField(
+              controller: _nomController,
+              decoration: const InputDecoration(
+                hintText: 'Entrez votre nom',
+              ),
+              validator: (String? value) {
+                if (value == null || value.isEmpty) {
+                  return 'Veuillez saisir votre nom';
+                }
+                return null;
+              },
             ),
-            validator: (String? value) {
-              if (value == null || value.isEmpty) {
-                return 'Veuillez saisir votre nom';
-              }
-              return null;
-            },
           ),
-          TextFormField(
-            controller: _prenomController,
-            decoration: const InputDecoration(
-              hintText: 'Entrez votre prénom',
+          const SizedBox(height: 16), // Espace entre les champs
+          Container(
+            width: 300, // Largeur fixe pour le formulaire
+            child: TextFormField(
+              controller: _prenomController,
+              decoration: const InputDecoration(
+                hintText: 'Entrez votre prénom',
+              ),
+              validator: (String? value) {
+                if (value == null || value.isEmpty) {
+                  return 'Veuillez saisir votre prénom';
+                }
+                return null;
+              },
             ),
-            validator: (String? value) {
-              if (value == null || value.isEmpty) {
-                return 'Veuillez saisir votre prénom';
-              }
-              return null;
-            },
           ),
-          TextFormField(
-            controller: _adresseController,
-            decoration: const InputDecoration(
-              hintText: 'Entrez votre adresse',
+          const SizedBox(height: 16), // Espace entre les champs
+          Container(
+            width: 300, // Largeur fixe pour le formulaire
+            child: TextFormField(
+              controller: _adresseController,
+              decoration: const InputDecoration(
+                hintText: 'Entrez votre adresse',
+              ),
+              validator: (String? value) {
+                if (value == null || value.isEmpty) {
+                  return 'Veuillez saisir votre adresse';
+                }
+                return null;
+              },
             ),
-            validator: (String? value) {
-              if (value == null || value.isEmpty) {
-                return 'Veuillez saisir votre adresse';
-              }
-              return null;
-            },
           ),
-          TextFormField(
-            controller: _emailController,
-            decoration: const InputDecoration(
-              hintText: 'Entrez votre email',
+          const SizedBox(height: 16), // Espace entre les champs
+          Container(
+            width: 300, // Largeur fixe pour le formulaire
+            child: TextFormField(
+              controller: _emailController,
+              decoration: const InputDecoration(
+                hintText: 'Entrez votre email',
+              ),
+              validator: (String? value) {
+                if (value == null || value.isEmpty) {
+                  return 'Veuillez saisir votre email';
+                } else if (!_emailRegExp.hasMatch(value)) {
+                  return 'Veuillez saisir un email valide';
+                }
+                return null;
+              },
             ),
-            validator: (String? value) {
-              if (value == null || value.isEmpty) {
-                return 'Veuillez saisir votre email';
-              } else if (!_emailRegExp.hasMatch(value)) {
-                return 'Veuillez saisir un email valide';
-              }
-              return null;
-            },
           ),
-          TextFormField(
-            controller: _passwordController,
-            obscureText: true,
-            decoration: const InputDecoration(
-              hintText: 'Entrez votre mot de passe',
+          const SizedBox(height: 16), // Espace entre les champs
+          Container(
+            width: 300, // Largeur fixe pour le formulaire
+            child: TextFormField(
+              controller: _passwordController,
+              obscureText: true,
+              decoration: const InputDecoration(
+                hintText: 'Entrez votre mot de passe',
+              ),
+              validator: (String? value) {
+                if (value == null || value.isEmpty) {
+                  return 'Veuillez saisir votre mot de passe';
+                }
+                return null;
+              },
             ),
-            validator: (String? value) {
-              if (value == null || value.isEmpty) {
-                return 'Veuillez saisir votre mot de passe';
-              }
-              return null;
-            },
           ),
-          DropdownButtonFormField<String>(
+          const SizedBox(height: 16),
+      Container(
+        width:300,
+         child: DropdownButtonFormField<String>(
             value: _selectedRole,
             hint: const Text('Sélectionnez un rôle'),
             onChanged: (String? newValue) {
@@ -124,6 +147,7 @@ class _InscriptionWidgetState extends State<InscriptionWidget> {
                 child: Text(value),
               );
             }).toList(),
+          ),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
