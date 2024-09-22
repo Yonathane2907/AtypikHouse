@@ -1,8 +1,11 @@
+import 'package:atypik_house/screens/CommercialScreen.dart';
 import 'package:atypik_house/screens/ContactScreen.dart';
 import 'package:atypik_house/screens/HomeScreen.dart';
 import 'package:atypik_house/screens/InscriptionScreen.dart';
 import 'package:atypik_house/screens/LogementsScreen.dart';
 import 'package:atypik_house/screens/AddLogement.dart';
+import 'package:atypik_house/screens/MesLogementsScreen.dart';
+import 'package:atypik_house/screens/ReservationScreen.dart';
 import 'package:go_router/go_router.dart';
 import '../screens/AboutScreen.dart';
 import '../screens/CGVScreen.dart';
@@ -51,7 +54,7 @@ class RouterService {
         GoRoute(
           path: '/images',
           name: 'images',
-          builder: (context, state) => ImagePickerUpload(),
+          builder: (context, state) => AddAccommodation(),
         ),
         GoRoute(
           path: '/admin',
@@ -74,9 +77,24 @@ class RouterService {
           builder: (context, state) => LegalNoticePage(),
         ),
         GoRoute(
+          path: '/commercial',
+          name: 'commercial',
+          builder: (context, state) => CommercialPage(),
+        ),
+        GoRoute(
           path: '/cgv',
           name: 'vente',
           builder: (context, state) => ContratGeneralVente(),
+        ),
+        GoRoute(
+          path: '/mes-logements',
+          name: 'mes-logements',
+          builder: (context, state) => MyLogementsPage(),
+        ),
+        GoRoute(
+          path: '/mes-reservations',
+          name: 'mes-reservations',
+          builder: (context, state) => ReservationsScreen(),
         ),
 
       ],

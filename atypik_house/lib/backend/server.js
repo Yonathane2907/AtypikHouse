@@ -46,6 +46,7 @@ const logementsRoutes = require('./api_logements');
 const imageRoutes = require('./api_image');
 const adminRoutes = require('./api_admin');
 const emailRoutes = require('./api_email');
+const reservationRoutes = require('./api_reservation');
 
 
 // Utiliser les routes
@@ -55,6 +56,7 @@ app.use('/uploads', express.static('uploads'));
 app.use('/api', imageRoutes);
 app.use('/api', adminRoutes);
 app.use('/api', emailRoutes);
+app.use('/api', reservationRoutes);
 
 // Écoute du serveur Express sur le port spécifié
 app.listen(port, () => {

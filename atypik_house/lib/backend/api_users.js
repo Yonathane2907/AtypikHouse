@@ -14,12 +14,7 @@ router.get('/getUsers', async (req, res) => {
         res.status(500).json({ error: 'Erreur lors de la récupération des utilisateurs' });
     }
 });
-
-//Endpoint d'inscription
-//Endpoint d'inscription
-// Endpoint d'inscription
 router.post('/signUp', async (req, res) => {
-    console.log(req.body);
     const { nom, prenom, adresse, email, password, role } = req.body; // Récupérer les données du corps de la requête
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -72,6 +67,7 @@ router.post('/signUp', async (req, res) => {
 
 
 //Endpoint Connexion
+// Endpoint Connexion
 router.post('/login', async (req, res) => {
     const { email, password } = req.body; // Récupérer les données du corps de la requête
 
@@ -96,18 +92,18 @@ router.post('/login', async (req, res) => {
         // Générer un token JWT pour l'authentification
         const payload = {
             user: {
-                id: user.id,
+                id: user.id_user,
+                nom: user.nom,
+                prenom: user.prenom,
                 email: user.email,
-                role:user.role,
-                // Autres informations utilisateur que vous souhaitez inclure
+                adresse: user.adresse,
+                role: user.role,
             }
-
         };
 
         jwt.sign(payload, 'secret_jwt', { expiresIn: '1h' }, (err, token) => {
             if (err) throw err;
-            console.log(payload.user.role);
-            res.json({ token, role: user.role });
+            res.json({ token, user: payload.user }); // Renvoie également les infos utilisateur
         });
 
     } catch (err) {
@@ -115,6 +111,8 @@ router.post('/login', async (req, res) => {
         res.status(500).json({ error: 'Erreur lors de la connexion' });
     }
 });
+
+
 
 // Middleware pour vérifier le token
 const verifyToken = (req, res, next) => {

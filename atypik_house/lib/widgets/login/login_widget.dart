@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../services/api/user_service.dart';
 
 class LoginWidget extends StatefulWidget {
@@ -16,7 +15,6 @@ class _LoginWidgetState extends State<LoginWidget> {
   final TextEditingController _passwordController = TextEditingController();
   String? _errorMessage;
 
-  // Regex pour validation de l'email
   final RegExp _emailRegExp = RegExp(
     r'^[^@]+@[^@]+\.[^@]+$',
     caseSensitive: false,
@@ -40,10 +38,8 @@ class _LoginWidgetState extends State<LoginWidget> {
         children: <Widget>[
           TextFormField(
             controller: _emailController,
-            decoration: const InputDecoration(
-              hintText: 'Entrez votre email',
-            ),
-            validator: (String? value) {
+            decoration: const InputDecoration(hintText: 'Entrez votre email'),
+            validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'Veuillez saisir votre email';
               } else if (!_emailRegExp.hasMatch(value)) {
@@ -55,10 +51,8 @@ class _LoginWidgetState extends State<LoginWidget> {
           TextFormField(
             controller: _passwordController,
             obscureText: true,
-            decoration: const InputDecoration(
-              hintText: 'Entrez votre mot de passe',
-            ),
-            validator: (String? value) {
+            decoration: const InputDecoration(hintText: 'Entrez votre mot de passe'),
+            validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'Veuillez saisir votre mot de passe';
               }
@@ -70,7 +64,7 @@ class _LoginWidgetState extends State<LoginWidget> {
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Text(
                 _errorMessage!,
-                style: TextStyle(color: Colors.red),
+                style: const TextStyle(color: Colors.red),
               ),
             ),
           Padding(
@@ -83,11 +77,8 @@ class _LoginWidgetState extends State<LoginWidget> {
 
                   try {
                     final success = await UserService().login(email, password);
-
                     if (success) {
-                      // Afficher un SnackBar pour indiquer que la connexion a réussi
                       _showSnackBar('Connexion réussie.');
-                      // Redirection vers la page d'accueil
                       GoRouter.of(context).go('/');
                     } else {
                       setState(() {
@@ -96,7 +87,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                     }
                   } catch (e) {
                     setState(() {
-                      _errorMessage = 'Une erreur s\'est produite. Veuillez réessayer plus tard.';
+                      _errorMessage = e.toString(); // Afficher le message d'erreur exact
                     });
                   }
                 }

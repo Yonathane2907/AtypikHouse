@@ -70,6 +70,14 @@ class _DrawerWidgetState extends State<DrawerWidget> {
               GoRouter.of(context).go('/logements');
             },
           ),
+          if (userRole == 'Locataire')
+            ListTile(
+              leading: const Icon(Icons.edit),
+              title: const Text('Mes réservations'),
+              onTap: () {
+                GoRouter.of(context).go('/mes-reservations');
+              },
+            ),
           if (userRole == 'admin') // Afficher pour les admins
             ListTile(
               leading: const Icon(Icons.admin_panel_settings),
@@ -81,16 +89,31 @@ class _DrawerWidgetState extends State<DrawerWidget> {
           if (userRole == 'Propriétaire') // Afficher pour les propriétaires
             ListTile(
               leading: const Icon(Icons.person),
-              title: const Text('Espace propriétaire'),
+              title: const Text('Ajouter un logement'),
               onTap: () {
-                GoRouter.of(context).go('/espace-proprietaire');
+                GoRouter.of(context).go('/images');
               },
             ),
+          if (userRole == 'Propriétaire')
+          ListTile(
+            leading: const Icon(Icons.person),
+            title: const Text('Mes logements'),
+            onTap: () {
+              GoRouter.of(context).go('/mes-logements');
+            },
+          ),
           ListTile(
             leading: const Icon(Icons.contact_mail),
             title: const Text('Contact'),
             onTap: () {
               GoRouter.of(context).go('/contact');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.account_balance_outlined),
+            title: const Text('Louer votre bien'),
+            onTap: () {
+              GoRouter.of(context).go('/commercial');
             },
           ),
           ListTile(

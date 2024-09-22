@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:go_router/go_router.dart';
 
 class CarouselSection extends StatelessWidget {
   final List<String> carouselImages = [
@@ -88,7 +89,9 @@ class CarouselSection extends StatelessWidget {
                       borderRadius: BorderRadius.circular(30.0),
                     ),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    GoRouter.of(context).go('/logements');
+                  },
                   child: const Text('Découvrir'),
                 ),
               ],

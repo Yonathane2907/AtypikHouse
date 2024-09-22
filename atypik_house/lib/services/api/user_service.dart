@@ -51,18 +51,25 @@ class UserService extends ChangeNotifier {
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = jsonDecode(response.body);
       final String token = data['token'];
-      final String role = data['role'];
+      final String role = data['user']['role'];
+      final int userId = data['user']['id'];
 
-      // Stocker le token et le rôle dans SharedPreferences
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('jwt_token', token);
       await prefs.setString('user_role', role);
+      await prefs.setInt('user_id', userId);
 
       return true;
     } else {
-      return false;
+      try {
+        final errorResponse = jsonDecode(response.body);
+        throw Exception(errorResponse['error'] ?? 'Erreur inconnue');
+      } catch (e) {
+        throw Exception('Erreur lors de l\'appel à l\'API');
+      }
     }
   }
+
 
   Future<void> logout() async {
     // Supprimer les informations de stockage
