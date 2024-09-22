@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart' as datetime_picker_plus;
+import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/logement.dart';
-import '../services/api/logement_service.dart'; // Service pour récupérer les logements
+import '../services/api/logement_service.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../models/Commentaire.dart';
 import '../widgets/commons/appbar_widget.dart';
 import '../widgets/commons/drawer_widget.dart';
-import '../widgets/commons/footer.dart'; // Import du widget Footer
-import '../models/Commentaire.dart';
+import '../widgets/commons/footer.dart';
 
 class LogementsScreen extends StatefulWidget {
   const LogementsScreen({Key? key}) : super(key: key);
@@ -20,8 +22,6 @@ class LogementsScreen extends StatefulWidget {
 class _LogementsScreenState extends State<LogementsScreen> {
   List<Logement> logements = [];
   List<Logement> filteredLogements = [];
-
-  // Champs de filtre
   String filterName = '';
   String filterPrice = '';
 
@@ -31,7 +31,6 @@ class _LogementsScreenState extends State<LogementsScreen> {
     _fetchLogements();
   }
 
-  // Méthode pour récupérer les logements et les filtrer
   Future<void> _fetchLogements() async {
     try {
       List<Logement> logementsList = await LogementService().fetchLogements();
@@ -44,7 +43,6 @@ class _LogementsScreenState extends State<LogementsScreen> {
     }
   }
 
-  // Méthode pour appliquer les filtres
   void _applyFilters() {
     setState(() {
       filteredLogements = logements.where((logement) {
@@ -63,12 +61,10 @@ class _LogementsScreenState extends State<LogementsScreen> {
       drawer: const DrawerWidget(),
       body: Column(
         children: [
-          // Ajout des filtres
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
-                // Filtre par nom
                 Expanded(
                   child: TextField(
                     decoration: const InputDecoration(
@@ -83,7 +79,6 @@ class _LogementsScreenState extends State<LogementsScreen> {
                   ),
                 ),
                 const SizedBox(width: 10),
-                // Filtre par prix
                 Expanded(
                   child: TextField(
                     decoration: const InputDecoration(
@@ -101,7 +96,6 @@ class _LogementsScreenState extends State<LogementsScreen> {
               ],
             ),
           ),
-          // Affichage des logements
           Expanded(
             child: filteredLogements.isEmpty
                 ? const Center(child: Text('Aucun logement correspondant'))
@@ -228,33 +222,45 @@ class LogementDetailScreen extends StatefulWidget {
 class _LogementDetailScreenState extends State<LogementDetailScreen> {
   List<Commentaire> commentaires = [];
   final TextEditingController _commentController = TextEditingController();
-  String? prenom; // Pour stocker le prénom de l'utilisateur
+  String? prenom;
+  DateTime? selectedStartDate;
+  DateTime? selectedEndDate;
+  bool isLoggedIn = false;
+  String? userRole;
 
   @override
   void initState() {
     super.initState();
     _fetchCommentaires();
-    _getUserInfo(); // Récupérer le prénom de l'utilisateur
+    _getUserInfo();
+    _checkAuthentication();
+  }
+
+  Future<void> _checkAuthentication() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('jwt_token');
+    final role = prefs.getString('user_role'); // Supposons que le rôle soit stocké dans SharedPreferences
+    setState(() {
+      isLoggedIn = token != null;
+      userRole = role;
+    });
   }
 
   Future<String?> getToken() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('jwt_token'); // 'token' est la clé sous laquelle tu as stocké le token
+    return prefs.getString('jwt_token');
   }
 
-  // Récupérer le prénom de l'utilisateur à partir du token JWT
   void _getUserInfo() async {
-    String? token = await getToken(); // Récupérer le token JWT
+    String? token = await getToken();
     if (token != null) {
       Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
-      print(decodedToken);
       setState(() {
-        prenom = decodedToken['user']['prenom']; // Récupérer le prénom
+        prenom = decodedToken['user']['prenom'];
       });
     }
   }
 
-  // Méthode pour récupérer les commentaires depuis le backend
   Future<void> _fetchCommentaires() async {
     final response = await http.get(
       Uri.parse('https://api.dsp-dev4-gv-kt-yb.fr/api/logements/${widget.logement.id_logement}/commentaires'),
@@ -262,32 +268,142 @@ class _LogementDetailScreenState extends State<LogementDetailScreen> {
     if (response.statusCode == 200) {
       List<dynamic> commentairesJson = json.decode(response.body);
       setState(() {
-        commentaires = commentairesJson
-            .map((commentJson) => Commentaire.fromJson(commentJson))
-            .toList();
+        commentaires = commentairesJson.map((commentJson) => Commentaire.fromJson(commentJson)).toList();
       });
     } else {
       // Gérer l'erreur
     }
   }
 
-  // Méthode pour ajouter un commentaire
   Future<void> _addCommentaire(String contenu) async {
     final response = await http.post(
       Uri.parse('https://api.dsp-dev4-gv-kt-yb.fr/api/logements/${widget.logement.id_logement}/commentaires'),
       headers: {'Content-Type': 'application/json'},
-      body: json.encode({'auteur': prenom ?? 'Anonyme', 'contenu': contenu}), // Utiliser le prénom ou "Anonyme"
+      body: json.encode({'auteur': prenom ?? 'Anonyme', 'contenu': contenu}),
     );
     if (response.statusCode == 201) {
       setState(() {
-        commentaires.add(
-          Commentaire(auteur: prenom ?? 'Anonyme', contenu: contenu, date: DateTime.now()),
-        );
+        commentaires.add(Commentaire(auteur: prenom ?? 'Anonyme', contenu: contenu, date: DateTime.now()));
       });
       _commentController.clear();
     } else {
       // Gérer l'erreur
     }
+  }
+
+  Future<void> _makeReservation(DateTime startDate, DateTime endDate) async {
+    String? token = await getToken();
+    final response = await http.post(
+      Uri.parse('https://api.dsp-dev4-gv-kt-yb.fr/api/api/reservation'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode({
+        'id_logement': widget.logement.id_logement,
+        'id_user': 15, // Récupère l'ID utilisateur
+        'date_debut': startDate.toIso8601String(),
+        'date_fin': endDate.toIso8601String(),
+      }),
+    );
+
+    if (response.statusCode == 201) {
+      // Réservation réussie
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Réservation réussie'),
+          content: const Text('Votre réservation a été confirmée.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+    } else {
+      // Gérer l'erreur
+    }
+  }
+
+  void _showReservationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Réserver ${widget.logement.titre}'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Sélectionnez les dates de réservation :'),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () {
+                  datetime_picker_plus.DatePicker.showDatePicker(context,
+                      theme: datetime_picker_plus.DatePickerTheme(
+                        backgroundColor: Colors.white,
+                        headerColor: Colors.blue,
+                        cancelStyle: const TextStyle(color: Colors.white),
+                        doneStyle: const TextStyle(color: Colors.white),
+                      ),
+                      showTitleActions: true,
+                      onConfirm: (date) {
+                        setState(() {
+                          selectedStartDate = date;
+                        });
+                      },
+                      currentTime: DateTime.now(),
+                      locale: LocaleType.fr);
+                },
+                child: Text(selectedStartDate == null ? 'Choisir la date de début' : 'Date de début : ${selectedStartDate!.toLocal()}'.split(' ')[0]),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () {
+                  datetime_picker_plus.DatePicker.showDatePicker(context,
+                      theme: datetime_picker_plus.DatePickerTheme(
+                        backgroundColor: Colors.white,
+                        headerColor: Colors.blue,
+                        cancelStyle: const TextStyle(color: Colors.white),
+                        doneStyle: const TextStyle(color: Colors.white),
+                      ),
+                      showTitleActions: true,
+                      onConfirm: (date) {
+                        setState(() {
+                          selectedEndDate = date;
+                        });
+                      },
+                      currentTime: DateTime.now(),
+                      locale: LocaleType.fr);
+                },
+                child: Text(selectedEndDate == null ? 'Choisir la date de fin' : 'Date de fin : ${selectedEndDate!.toLocal()}'.split(' ')[0]),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                if (selectedStartDate != null && selectedEndDate != null) {
+                  _makeReservation(selectedStartDate!, selectedEndDate!);
+                  Navigator.of(context).pop(); // Fermer le dialog
+                } else {
+                }
+              },
+              child: const Text('Réserver'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Annuler'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -304,7 +420,7 @@ class _LogementDetailScreenState extends State<LogementDetailScreen> {
             Image.network(
               'https://api.dsp-dev4-gv-kt-yb.fr/${widget.logement.image_path}',
               fit: BoxFit.cover,
-              height: 300,
+              height: 400, // Hauteur augmentée
               width: double.infinity,
             ),
             const SizedBox(height: 16),
@@ -332,7 +448,17 @@ class _LogementDetailScreenState extends State<LogementDetailScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            // Section des commentaires
+            if(isLoggedIn)
+            Align(
+              alignment: Alignment.centerRight, // Aligner le bouton à droite
+              child: ElevatedButton(
+                onPressed: () {
+                  _showReservationDialog(context);
+                },
+                child: const Text('Réserver'),
+              ),
+            ),
+            const SizedBox(height: 16),
             Expanded(
               child: ListView.builder(
                 itemCount: commentaires.length,
@@ -350,7 +476,6 @@ class _LogementDetailScreenState extends State<LogementDetailScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            // Champ pour ajouter un commentaire
             Row(
               children: [
                 Expanded(
@@ -377,5 +502,3 @@ class _LogementDetailScreenState extends State<LogementDetailScreen> {
     );
   }
 }
-
-

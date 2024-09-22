@@ -70,6 +70,14 @@ class _DrawerWidgetState extends State<DrawerWidget> {
               GoRouter.of(context).go('/logements');
             },
           ),
+          if (userRole == 'Locataire')
+            ListTile(
+              leading: const Icon(Icons.edit),
+              title: const Text('Mes réservations'),
+              onTap: () {
+                GoRouter.of(context).go('/mes-reservations');
+              },
+            ),
           if (userRole == 'admin') // Afficher pour les admins
             ListTile(
               leading: const Icon(Icons.admin_panel_settings),

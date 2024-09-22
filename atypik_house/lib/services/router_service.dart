@@ -5,6 +5,7 @@ import 'package:atypik_house/screens/InscriptionScreen.dart';
 import 'package:atypik_house/screens/LogementsScreen.dart';
 import 'package:atypik_house/screens/AddLogement.dart';
 import 'package:atypik_house/screens/MesLogementsScreen.dart';
+import 'package:atypik_house/screens/ReservationScreen.dart';
 import 'package:go_router/go_router.dart';
 import '../screens/AboutScreen.dart';
 import '../screens/CGVScreen.dart';
@@ -89,6 +90,11 @@ class RouterService {
           path: '/mes-logements',
           name: 'mes-logements',
           builder: (context, state) => MyLogementsPage(),
+        ),
+        GoRoute(
+          path: '/mes-reservations',
+          name: 'mes-reservations',
+          builder: (context, state) => ReservationsScreen(),
         ),
 
       ],
